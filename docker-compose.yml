@@ -1,0 +1,26 @@
+version: '3.4'
+
+name: "ChatApplication"
+
+services:
+  chat.api:
+    image: ${DOCKER_REGISTRY-}chatapi
+    environment: 
+        -   ConnectionStrings__ChatConnectionString=Server=sqldb;Database=ChatApp;User Id=sa;Password=Admin!Pass10;Encrypt=False
+    ports:
+        -   '49100:443'
+    build:
+      context: .
+      dockerfile: Chat.API/Dockerfile
+    depends_on:
+      - sqldb
+
+  sqldb:
+    image: 'mcr.microsoft.com/mssql/server:latest'
+    container_name: chat-app-sqldb
+    user: root
+    environment:
+      - 'SA_PASSWORD=Admin!Pass10'
+      - 'ACCEPT_EULA=Y'
+    ports:
+      - '1455:1433'
