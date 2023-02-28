@@ -1,25 +1,24 @@
-﻿using Chat.Domain.Factories.Authentication;
+﻿using Carter;
+using Chat.Domain.Factories.Authentication;
 using Chat.Domain.Models.Authentication.Aggregates;
 using Chat.Domain.Models.Authentication.ValueObjects;
-using Chat.Infrastructure.Repositories;
-using Microsoft.AspNetCore.Identity;
 
-namespace Chat.API.Endpoints.Authentication.Register;
-public static class Endpoint
+namespace Chat.API.Endpoints.Authentication.SignUp;
+public class Endpoint : ICarterModule
 {
-    public static void AddRoutes(this IEndpointRouteBuilder app)
+    public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost("register", Handler)
-            .WithName(nameof(Register))
+        app.MapPost("sign-up", Handler)
+            .WithName(nameof(SignUp))
             .WithTags(nameof(Authentication))
             .Produces(StatusCodes.Status200OK, typeof(void))
             .Produces(StatusCodes.Status401Unauthorized, typeof(void))
             .AllowAnonymous();
     }
 
-    private static async Task<IResult> Handler(Request request,
+    private static async Task<IResult> Handler(
+        Request request,
         IAuthenticationFactory factory,
-        IUserRepository userRepository,
         CancellationToken cancellationToken)
     {
         var user = new User()
@@ -28,7 +27,7 @@ public static class Endpoint
             Password = Password.From(request.Password)
         };
 
-        var result = await factory.RegisterAsync(user, cancellationToken);
+        var result = await factory.SignUpAsync(user, cancellationToken);
 
         if (result.Errors.Any())
         {

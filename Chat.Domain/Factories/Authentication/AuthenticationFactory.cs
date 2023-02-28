@@ -21,17 +21,17 @@ public class AuthenticationFactory : IAuthenticationFactory
         throw new NotImplementedException();
     }
 
-    public Task<User> LogInAsync(User user, CancellationToken cancellationToken)
+    public async Task<SignInResult> SignInAsync(User user)
     {
-        throw new NotImplementedException();
+        return await _signInManager.PasswordSignInAsync(user.Username.Value, user.Password.Value, isPersistent: false, lockoutOnFailure: false);
     }
 
-    public Task<User> LogOutAsync(User user, CancellationToken cancellationToken)
+    public async Task SignOutAsync()
     {
-        throw new NotImplementedException();
+        await _signInManager.SignOutAsync();
     }
 
-    public async Task<IdentityResult> RegisterAsync(User user, CancellationToken cancellationToken)
+    public async Task<IdentityResult> SignUpAsync(User user, CancellationToken cancellationToken)
     {
         var entity = new UserEntity()
         {

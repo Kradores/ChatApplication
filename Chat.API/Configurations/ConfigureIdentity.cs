@@ -8,12 +8,16 @@ public static class ConfigureIdentity
 {
     public static IServiceCollection AddIdentityAuthentication(this IServiceCollection services)
     {
-        services.AddIdentityCore<User>(options => 
-            options.SignIn.RequireConfirmedAccount = true)
-            .AddEntityFrameworkStores<ChatContext>()
-            .AddUserManager<UserManager<User>>()
-            .AddSignInManager<SignInManager<User>>()
-            .AddDefaultTokenProviders();
+        services.AddIdentityCore<User>(options =>
+        {
+            options.SignIn.RequireConfirmedAccount = false;
+            options.SignIn.RequireConfirmedEmail = false;
+            options.SignIn.RequireConfirmedPhoneNumber = false;
+        })
+        .AddEntityFrameworkStores<ChatContext>()
+        .AddUserManager<UserManager<User>>()
+        .AddSignInManager<SignInManager<User>>()
+        .AddDefaultTokenProviders();
 
         services.AddAuthentication(o =>
         {
@@ -21,6 +25,8 @@ public static class ConfigureIdentity
             o.DefaultSignInScheme = IdentityConstants.ExternalScheme;
         })
         .AddIdentityCookies(o => { });
+
+        services.AddAuthorization();
 
         return services;
     }

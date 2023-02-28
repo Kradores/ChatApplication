@@ -1,6 +1,5 @@
+using Carter;
 using Chat.API.Configurations;
-using Chat.API.Endpoints.Authentication.Register;
-using System.Security.Claims;
 
 namespace ChatApplication
 {
@@ -17,7 +16,8 @@ namespace ChatApplication
                 .AddIdentityAuthentication()
                 .AddWriters()
                 .AddFactories()
-                .AddRepositories();
+                .AddRepositories()
+                .AddCarter();
 
             var app = builder.Build();
 
@@ -26,9 +26,7 @@ namespace ChatApplication
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseRouting()
-                .UseAuthentication()
-                .UseEndpoints(x => x.AddRoutes());
+            app.MapCarter();
 
             app.MapGet("/", () => "Hello World!");
 

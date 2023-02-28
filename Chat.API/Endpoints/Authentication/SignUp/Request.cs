@@ -1,4 +1,4 @@
-﻿namespace Chat.API.Endpoints.Authentication.Register;
+﻿namespace Chat.API.Endpoints.Authentication.SignUp;
 
 public class Request
 {
