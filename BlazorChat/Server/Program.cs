@@ -1,7 +1,6 @@
-using Carter;
-using Chat.API.Configurations;
+using Microsoft.AspNetCore.ResponseCompression;
 
-namespace ChatApplication
+namespace BlazorChat
 {
     public class Program
     {
@@ -9,22 +8,17 @@ namespace ChatApplication
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.AddOptions();
+            // Add services to the container.
 
-            builder.Services
-                .AddDbContext(builder.Configuration)
-                .AddIdentityAuthentication()
-                .AddWriters()
-                .AddFactories()
-                .AddRepositories()
-                .AddCarter()
-                .AddRazorPages();
+            builder.Services.AddControllersWithViews();
+            builder.Services.AddRazorPages();
 
             var app = builder.Build();
 
+            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                app.UseWebAssemblyDebugging();
             }
             else
             {
@@ -40,8 +34,9 @@ namespace ChatApplication
 
             app.UseRouting();
 
+
             app.MapRazorPages();
-            app.MapCarter();
+            app.MapControllers();
             app.MapFallbackToFile("index.html");
 
             app.Run();

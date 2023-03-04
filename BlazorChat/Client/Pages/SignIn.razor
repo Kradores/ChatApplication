@@ -1,0 +1,76 @@
+﻿@page "/sign-in"
+@inject HttpClient Http
+@inject NavigationManager NavManager
+@using BlazorChat.Client.Models.Authentication
+
+<PageTitle>SignIn</PageTitle>
+
+<EditForm EditContext="@EditContext" OnValidSubmit="@HandleValidSubmit" onchange="">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <ValidationMessage For=@(() => ErrorMessage) />
+    <br />
+    <div class="form-group">
+        <label for="username">Username:</label>
+        <InputText DisplayName="Username" id="username" @bind-Value="Request.Username" class="form-control" onchange="" />
+    </div>
+    
+    <div class="form-group">
+        <label for="password">Password:</label>
+        <InputText DisplayName="Password" id="password" type="password" @bind-Value="Request.Password" class="form-control" />
+    </div>
+    
+    <input type="submit" class="btn btn-primary" value="Sign-In" />
+</EditForm>
+
+@code {
+    private HttpResponseMessage HttpResponseMessage = new();
+    private SignInRequest Request = new();
+    private EditContext? EditContext;
+    private ValidationMessageStore? MessageStore;
+    private FieldIdentifier ErrorMessage;
+
+    protected override void OnInitialized()
+    {
+        EditContext = new(Request);
+        EditContext.OnValidationRequested += HandleValidationRequested;
+        EditContext.OnFieldChanged += HandleFieldChanged;
+        MessageStore = new(EditContext);
+    }
+
+    private void HandleValidationRequested(object? sender,
+        ValidationRequestedEventArgs args)
+    {
+        MessageStore?.Clear();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        MessageStore?.Clear();
+        HttpResponseMessage = await Http.PostAsJsonAsync("/sign-in", Request);
+
+        if (!HttpResponseMessage.IsSuccessStatusCode)
+        {
+            MessageStore?.Add(() => ErrorMessage, "Username or Password doesn't match!");
+        }
+        else
+        {
+            NavManager.NavigateTo("/");
+        }
+    }
+
+    private void HandleFieldChanged(object? sender,
+        FieldChangedEventArgs args)
+    {
+        MessageStore?.Clear();
+    }
+
+    public void Dispose()
+    {
+        if (EditContext is not null)
+        {
+            EditContext.OnValidationRequested -= HandleValidationRequested;
+            EditContext.OnFieldChanged -= HandleFieldChanged;
+        }
+    }
+}

@@ -10,9 +10,7 @@ public static class ConfigureIdentity
     {
         services.AddIdentityCore<User>(options =>
         {
-            options.SignIn.RequireConfirmedAccount = false;
-            options.SignIn.RequireConfirmedEmail = false;
-            options.SignIn.RequireConfirmedPhoneNumber = false;
+            options.SignIn.RequireConfirmedAccount = true;
         })
         .AddEntityFrameworkStores<ChatContext>()
         .AddUserManager<UserManager<User>>()

@@ -35,7 +35,9 @@ public class AuthenticationFactory : IAuthenticationFactory
     {
         var entity = new UserEntity()
         {
-            UserName = user.Username.Value
+            UserName = user.Username.Value,
+            EmailConfirmed = true,
+            PhoneNumberConfirmed = true
         };
 
         var result = await _userManager.CreateAsync(entity, user.Password.Value);

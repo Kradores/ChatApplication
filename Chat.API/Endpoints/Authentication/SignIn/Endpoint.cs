@@ -29,6 +29,11 @@ public class Endpoint : ICarterModule
 
         var result = await factory.SignInAsync(user);
 
-        return Results.Ok(result);
+        if (result.Succeeded)
+        {
+            return Results.Ok(result);
+        }
+
+        return Results.Unauthorized();
     }
 }
