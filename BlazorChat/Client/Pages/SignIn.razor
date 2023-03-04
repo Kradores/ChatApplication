@@ -31,7 +31,6 @@
 
 @code {
     [CascadingParameter] public Task<AuthenticationState> AuthTask { get; set; }
-    private HttpResponseMessage HttpResponseMessage = new();
     private SignInRequest Request = new();
     private EditContext? EditContext;
     private ValidationMessageStore? MessageStore;
@@ -57,9 +56,9 @@
     private async Task HandleValidSubmit()
     {
         MessageStore?.Clear();
-        HttpResponseMessage = await Http.PostAsJsonAsync("/sign-in", Request);
+        var response = await Http.PostAsJsonAsync("/sign-in", Request);
 
-        if (!HttpResponseMessage.IsSuccessStatusCode)
+        if (!response.IsSuccessStatusCode)
         {
             MessageStore?.Add(() => ErrorMessage, "Username or Password doesn't match!");
         }
