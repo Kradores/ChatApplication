@@ -25,6 +25,7 @@ namespace ChatApplication
             if (app.Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseWebAssemblyDebugging();
             }
             else
             {
@@ -37,6 +38,8 @@ namespace ChatApplication
 
             app.UseBlazorFrameworkFiles();
             app.UseStaticFiles();
+
+            app.UseCookiePolicy();
 
             app.UseRouting();
 

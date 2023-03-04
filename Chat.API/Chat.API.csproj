@@ -31,8 +31,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Chat.Domain\Chat.Domain.csproj" />
     <ProjectReference Include="..\Chat.Infrastructure\Chat.Infrastructure.csproj" />
-	  <ProjectReference Include="..\BlazorChat\Client\BlazorChat.Client.csproj" />
-	  <ProjectReference Include="..\BlazorChat\Shared\BlazorChat.Shared.csproj" />
+	<ProjectReference Include="..\BlazorChat\Client\BlazorChat.Client.csproj" />
+	<ProjectReference Include="..\BlazorChat\Shared\BlazorChat.Shared.csproj" />
   </ItemGroup>
 
 </Project>
