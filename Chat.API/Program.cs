@@ -17,8 +17,7 @@ namespace ChatApplication
                 .AddWriters()
                 .AddFactories()
                 .AddRepositories()
-                .AddCarter()
-                .AddRazorPages();
+                .AddCarter();
 
             var app = builder.Build();
 
@@ -41,9 +40,6 @@ namespace ChatApplication
 
             app.UseCookiePolicy();
 
-            app.UseRouting();
-
-            app.MapRazorPages();
             app.MapCarter();
             app.MapFallbackToFile("index.html");
 
