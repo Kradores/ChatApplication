@@ -1,5 +1,5 @@
-﻿using Chat.Domain.Factories.Authentication;
-using Chat.Infrastructure.Repositories;
+﻿using Chat.Infrastructure.Repositories;
+using Chat.Infrastructure.Repositories.Interfaces;
 
 namespace Chat.API.Configurations;
 

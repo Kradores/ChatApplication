@@ -1,6 +1,6 @@
 ﻿using Chat.Infrastructure.Entities;
 
-namespace Chat.Infrastructure.Repositories;
+namespace Chat.Infrastructure.Repositories.Interfaces;
 
 public interface IUserRepository
 {

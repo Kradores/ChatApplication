@@ -1,4 +1,5 @@
 ﻿using Chat.Infrastructure.Entities;
+using Chat.Infrastructure.Repositories.Interfaces;
 
 namespace Chat.Infrastructure.Repositories;
 

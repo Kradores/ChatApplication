@@ -1,7 +1,6 @@
 ﻿using Chat.Domain.Models.Authentication.Aggregates;
-using UserEntity = Chat.Infrastructure.Entities.User;
-using Chat.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Identity;
+using UserEntity = Chat.Infrastructure.Entities.User;
 
 namespace Chat.Domain.Factories.Authentication;
 
