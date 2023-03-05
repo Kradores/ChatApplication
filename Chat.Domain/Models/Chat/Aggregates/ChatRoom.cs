@@ -2,10 +2,18 @@
 
 namespace Chat.Domain.Models.Chat.Aggregates;
 
-public class Chat : IAggregateRoot
+public class ChatRoom : IAggregateRoot
 {
     private readonly List<Notification> _notifications;
-    public Chat() => _notifications = new();
+    public ChatRoom() => _notifications = new();
+
+    public ChatRoom(Id id, Name name, CreatedAt createdAt, List<Notification> notifications)
+    {
+        Id = id;
+        Name = name;
+        CreatedAt = createdAt;
+        _notifications = notifications;
+    }
 
     public Id Id { get; init; } = null!;
     public Name Name { get; init; } = null!;

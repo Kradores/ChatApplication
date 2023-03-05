@@ -50,6 +50,7 @@ namespace ChatApplication
             app.UseStaticFiles();
 
             app.UseCookiePolicy();
+            app.UseAuthorization();
 
             app.MapCarter();
             app.MapHub<ChatHub>("/chathub");

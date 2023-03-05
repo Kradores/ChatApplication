@@ -1,7 +1,7 @@
 ﻿using Chat.Domain.Models.Authentication.Aggregates;
 using Microsoft.AspNetCore.Identity;
 
-namespace Chat.Domain.Factories.Authentication;
+namespace Chat.Domain.Factories.Interfaces;
 
 public interface IAuthenticationFactory
 {

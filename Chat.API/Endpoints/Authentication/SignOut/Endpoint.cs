@@ -1,5 +1,5 @@
 ﻿using Carter;
-using Chat.Domain.Factories.Authentication;
+using Chat.Domain.Factories.Interfaces;
 
 namespace Chat.API.Endpoints.Authentication.SignOut;
 public class Endpoint : ICarterModule

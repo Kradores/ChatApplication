@@ -1,5 +1,5 @@
 ﻿using Carter;
-using Chat.Domain.Factories.Authentication;
+using Chat.Domain.Factories.Interfaces;
 using Chat.Domain.Models.Authentication.Aggregates;
 using Chat.Domain.Models.Authentication.ValueObjects;
 

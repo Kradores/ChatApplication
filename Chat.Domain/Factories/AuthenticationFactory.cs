@@ -1,8 +1,9 @@
-﻿using Chat.Domain.Models.Authentication.Aggregates;
+﻿using Chat.Domain.Factories.Interfaces;
+using Chat.Domain.Models.Authentication.Aggregates;
 using Microsoft.AspNetCore.Identity;
 using UserEntity = Chat.Infrastructure.Entities.User;
 
-namespace Chat.Domain.Factories.Authentication;
+namespace Chat.Domain.Factories;
 
 public class AuthenticationFactory : IAuthenticationFactory
 {
