@@ -1,5 +1,7 @@
 using Carter;
 using Chat.API.Configurations;
+using Chat.API.Hubs;
+using Microsoft.AspNetCore.ResponseCompression;
 
 namespace ChatApplication
 {
@@ -17,9 +19,18 @@ namespace ChatApplication
                 .AddWriters()
                 .AddFactories()
                 .AddRepositories()
-                .AddCarter();
+                .AddCarter()
+                .AddSignalR();
+
+            builder.Services.AddResponseCompression(opts =>
+            {
+                opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+                    new[] { "application/octet-stream" });
+            });
 
             var app = builder.Build();
+
+            app.UseResponseCompression();
 
             if (app.Environment.IsDevelopment())
             {
@@ -41,6 +52,7 @@ namespace ChatApplication
             app.UseCookiePolicy();
 
             app.MapCarter();
+            app.MapHub<ChatHub>("/chathub");
             app.MapFallbackToFile("index.html");
 
             app.Run();

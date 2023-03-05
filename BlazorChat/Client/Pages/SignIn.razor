@@ -11,19 +11,19 @@
 
 <PageTitle>SignIn</PageTitle>
 
-<EditForm EditContext="@EditContext" OnValidSubmit="@HandleValidSubmit" onchange="">
+<EditForm EditContext="@EditContext" OnValidSubmit="@HandleValidSubmit">
     <DataAnnotationsValidator />
     <ValidationSummary />
     <ValidationMessage For=@(() => ErrorMessage) />
     <br />
     <div class="form-group">
         <label for="username">Username:</label>
-        <InputText DisplayName="Username" id="username" @bind-Value="Request.Username" class="form-control" onchange="" />
+        <InputText DisplayName="Username" id="username" @bind-Value="Request.Username" class="form-control" size="50" />
     </div>
     
     <div class="form-group">
         <label for="password">Password:</label>
-        <InputText DisplayName="Password" id="password" type="password" @bind-Value="Request.Password" class="form-control" />
+        <InputText DisplayName="Password" id="password" type="password" @bind-Value="Request.Password" class="form-control" size="50" />
     </div>
     
     <input type="submit" class="btn btn-primary" value="Sign-In" />
