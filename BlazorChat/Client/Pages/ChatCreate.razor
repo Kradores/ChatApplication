@@ -1,7 +1,8 @@
-﻿@page "/authentication/sign-in"
+﻿@page "/chats/create"
 
 @using BlazorChat.Client.Models.Authentication
 @using BlazorChat.Client.Services;
+@using BlazorChat.Client.Models.Chat;
 @using Microsoft.AspNetCore.Authorization
 @using System.Security.Claims
 
@@ -9,7 +10,7 @@
 @inject NavigationManager NavManager
 @inject AuthenticationStateProvider AuthState
 
-<PageTitle>SignIn</PageTitle>
+<PageTitle>Create Chat</PageTitle>
 
 <EditForm EditContext="@EditContext" OnValidSubmit="@HandleValidSubmit">
     <DataAnnotationsValidator />
@@ -17,17 +18,26 @@
     <ValidationMessage For=@(() => ErrorMessage) />
     <br />
     <div class="form-group">
-        <label for="username">Username:</label>
-        <InputText DisplayName="Username" id="username" @bind-Value="Request.Username" class="form-control" size="50" />
+        <label for="name">Name:</label>
+        <InputText DisplayName="Name" id="name" @bind-Value="createInput.Name" class="form-control" />
+    </div>
+
+    <label class="form-label" for="users">Users:</label>
+    <br />
+    <div id="users" class="form-group">
+            @foreach (ChatCreateInput.UserCheckbox user in createInput.UserCheckboxes)
+            {
+                <div class="form-check">
+                    <label class="form-check-label" for="@user.Id">@user.Name</label>
+                    <InputCheckbox id="@user.Id" @bind-Value="@user.IsChecked" class="form-check-input" />
+                </div>
+                
+            }
     </div>
     <br />
-    <div class="form-group">
-        <label for="password">Password:</label>
-        <InputText DisplayName="Password" id="password" type="password" @bind-Value="Request.Password" class="form-control" size="50" />
-    </div>
-    <br />
-    <input type="submit" class="btn btn-primary" value="Sign-In" />
+    <input type="submit" class="btn btn-primary" value="Create" />
 </EditForm>
+@string.Join(", ", SelectedIds)
 
 @code {
     [CascadingParameter] public Task<AuthenticationState> AuthTask { get; set; }
@@ -36,9 +46,25 @@
     private ValidationMessageStore? MessageStore;
     private FieldIdentifier ErrorMessage;
     private ClaimsPrincipal? User;
+    private List<string> users = new List<string>() { "Alex", "Viorel", "Viorica", "Marcel", "Marcica" };
+    private List<string> SelectedIds { get; } = new List<string>();
+
+    private ChatCreateInput createInput = new();
+
+    private void AddUsersToInput()
+    {
+        createInput.UserCheckboxes = users.Select(x => new ChatCreateInput.UserCheckbox()
+        {
+            Id = Guid.NewGuid().ToString(),
+            Name = x,
+            IsChecked = false
+        }).ToList();
+    }
 
     protected override async Task OnInitializedAsync()
     {
+        AddUsersToInput();
+
         var authState = await AuthTask;
         User = authState.User;
         EditContext = new(Request);
