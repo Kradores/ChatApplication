@@ -1,0 +1,111 @@
+﻿@page "/chats/{id}"
+
+@using Microsoft.AspNetCore.SignalR.Client
+
+@inject NavigationManager Navigation
+@implements IAsyncDisposable
+
+<h3>ChatRoom @Id</h3>
+<p hidden="@(!IsConnected)">I am connected!</p>
+
+<div class="row">
+    @foreach(string user in users)
+    {
+        <div class="col">@user</div>
+    }
+</div>
+
+
+@code {
+    [Parameter]
+    public string? Id { get; set; } = null;
+
+    private HubConnection? hubConnection;
+    private List<string> messages = new List<string>();
+    private List<string> users = new List<string>();
+
+    public bool IsConnected =>
+        hubConnection?.State == HubConnectionState.Connected;
+
+    protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(Navigation.ToAbsoluteUri("/chathub"))
+            .Build();
+
+        hubConnection.On<string, string>("NotifyUserJoined", (user, id) =>
+        {
+            var encodedMsg = $"{user}";
+            users.Add(encodedMsg);
+            NotifyCallerJoinedAsync(id).Wait();
+            StateHasChanged();
+        });
+
+        hubConnection.On<string>("NotifyCallerJoined", (user) =>
+        {
+            var encodedMsg = $"{user}";
+            users.Add(encodedMsg);
+            StateHasChanged();
+        });
+
+        hubConnection.On<string>("NotifyUserLeft", (user) =>
+        {
+            var encodedMsg = $"{user}";
+            users.Remove(encodedMsg);
+            StateHasChanged();
+        });
+
+        await hubConnection.StartAsync();
+    }
+
+    public override async Task SetParametersAsync(ParameterView parameters)
+    {
+        if (Id != null)
+        {
+            await RemoveFromGroupAsync();
+        }
+
+        await base.SetParametersAsync(parameters);
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await AddToGroupAsync();
+        await base.OnParametersSetAsync();
+    }
+
+    private async Task NotifyCallerJoinedAsync(string id)
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.SendAsync("NotifyCallerJoined", id);
+        }
+    }
+
+    private async Task AddToGroupAsync()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.SendAsync("AddToGroup", Id);
+        }
+    }
+
+    private async Task RemoveFromGroupAsync()
+    {
+        if (hubConnection is not null)
+        {
+            users = new();
+            await hubConnection.SendAsync("RemoveFromGroup", Id);
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await RemoveFromGroupAsync();
+
+        if (hubConnection is not null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
+}

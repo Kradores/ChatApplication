@@ -24,9 +24,6 @@ namespace BlazorChat.Client
             {
                 options.ProviderOptions.Authority = builder.HostEnvironment.BaseAddress;
                 options.ProviderOptions.ClientId = "ClientId";
-                options.AuthenticationPaths.LogOutPath = "sign-out";
-                options.AuthenticationPaths.LogInPath = "sign-in";
-                options.AuthenticationPaths.RegisterPath = "sign-up";
             });
 
             await builder.Build().RunAsync();

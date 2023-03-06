@@ -16,7 +16,7 @@ public class ChatHub : Hub
     {
         if (Context.User?.Identity?.Name is not null)
         {
-            await Clients.User(user).SendAsync("ReceivePrivateMessage", message);
+            await Clients.User(user).SendAsync("ReceivePrivateMessage", Context.User.Identity.Name, message);
         }
     }
 
@@ -24,7 +24,7 @@ public class ChatHub : Hub
     {
         if (Context.User?.Identity?.Name is not null)
         {
-            await Clients.Group(groupName).SendAsync("ReceiveGroupMessage", message);
+            await Clients.Group(groupName).SendAsync("ReceiveGroupMessage", Context.User.Identity.Name, message);
         }
     }
 
@@ -33,8 +33,15 @@ public class ChatHub : Hub
         if (Context.User?.Identity?.Name is not null)
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+            await Clients.Group(groupName).SendAsync("NotifyUserJoined", Context.User.Identity.Name, Context.UserIdentifier);
+        }
+    }
 
-            await Clients.Group(groupName).SendAsync("NotifyUserJoined", $"{Context.User.Identity.Name} has joined the group {groupName}.");
+    public async Task NotifyCallerJoined(string callerId)
+    {
+        if (Context.User?.Identity?.Name is not null && Context.UserIdentifier != callerId)
+        {
+            await Clients.User(callerId).SendAsync("NotifyCallerJoined", Context.User.Identity.Name);
         }
     }
 
@@ -42,8 +49,8 @@ public class ChatHub : Hub
     {
         if (Context.User?.Identity?.Name is not null)
         {
+            await Clients.Group(groupName).SendAsync("NotifyUserLeft", Context.User.Identity.Name);
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
-            await Clients.Group(groupName).SendAsync("NotifyUserLeft", $"{Context.User.Identity.Name} has left the group {groupName}.");
         }
     }
 }
