@@ -1,3 +1,4 @@
+using BlazorChat.Client.Configurations;
 using BlazorChat.Client.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
@@ -25,6 +26,9 @@ namespace BlazorChat.Client
                 options.ProviderOptions.Authority = builder.HostEnvironment.BaseAddress;
                 options.ProviderOptions.ClientId = "ClientId";
             });
+
+            builder.Services.AddApiRequests()
+                .AddStateContainers();
 
             await builder.Build().RunAsync();
         }

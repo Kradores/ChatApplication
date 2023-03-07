@@ -1,9 +1,13 @@
-﻿@using BlazorChat.Client.Models.Chat
+﻿@using BlazorChat.Client.Models.Responses.ChatRooms
+@using BlazorChat.Client.Extensions
+@using BlazorChat.Client.Models.Feeds.Chat
+@using BlazorChat.Client.StateContainers;
 
 @implements IDisposable
 
 @inject HttpClient Http
 @inject AuthenticationStateProvider AuthState
+@inject ChatRoomsStateContainer ChatRooms
 
 
 <div class="top-row ps-3 navbar navbar-dark">
@@ -34,7 +38,7 @@
                         <span class="oi oi-action-redo" aria-hidden="true"></span> Refresh
                     </NavLink>
                 </div>
-                @foreach (ChatRoom chat in Chats)
+                @foreach (ChatRoom chat in ChatRooms.Value)
                 {
                     <div class="nav-item px-3">
                         <NavLink class="nav-link" href="@("chats/" + chat.Id)">
@@ -52,7 +56,7 @@
     [CascadingParameter]
     private Task<AuthenticationState>? authenticationState { get; set; }
 
-    private List<ChatRoom> Chats = new();
+    //private List<ChatRoom> ChatRooms { get; set; } = new();
     private bool isHidden = true;
 
     private bool collapseNavMenu = true;
@@ -69,6 +73,7 @@
         var identity = authState.User.Identity;
 
         AuthState.AuthenticationStateChanged += AuthenticationStateChangedHandler;
+        ChatRooms.OnStateChange += StateHasChanged;
 
         if (identity?.IsAuthenticated != null && identity?.IsAuthenticated == true)
         {
@@ -83,15 +88,13 @@
 
         if (response != null)
         {
-            Chats = response.Rooms;
+            ChatRooms.Init(response.Rooms.ToFeed());
             isHidden = true;
         }
         else
         {
             isHidden = false;
         }
-
-        StateHasChanged();
     }
 
     private void AuthenticationStateChangedHandler(Task<AuthenticationState> task)
@@ -111,5 +114,6 @@
     public void Dispose()
     {
         AuthState.AuthenticationStateChanged -= AuthenticationStateChangedHandler;
+        ChatRooms.OnStateChange -= StateHasChanged;
     }
 }

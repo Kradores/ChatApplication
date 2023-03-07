@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace BlazorChat.Client.Models.Authentication;
+namespace BlazorChat.Client.Models.Requests.Authentication;
 
-public class SignUpRequest
+public class SignInRequest
 {
     [Required]
     public string Username { get; set; } = null!;

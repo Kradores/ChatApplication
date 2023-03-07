@@ -1,4 +1,4 @@
-﻿namespace BlazorChat.Client.Models.Chat;
+﻿namespace BlazorChat.Client.Models.Feeds.Chat;
 
 public class ChatCreateInput
 {

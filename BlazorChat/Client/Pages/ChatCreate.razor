@@ -1,14 +1,18 @@
 ﻿@page "/chats/create"
 
-@using BlazorChat.Client.Models.Authentication
 @using BlazorChat.Client.Services;
-@using BlazorChat.Client.Models.Chat;
-@using Microsoft.AspNetCore.Authorization
+@using BlazorChat.Client.Models.Feeds.Chat
 @using System.Security.Claims
+@using BlazorChat.Client.Requests.Users
+@using BlazorChat.Client.Extensions
+@using BlazorChat.Client.Requests.Chats
+@using BlazorChat.Client.Models.Responses.ChatRooms
+@using BlazorChat.Client.StateContainers;
 
-@inject HttpClient Http
 @inject NavigationManager NavManager
-@inject AuthenticationStateProvider AuthState
+@inject UserRequests UserRequests
+@inject ChatRequests ChatRequests
+@inject ChatRoomsStateContainer ChatRooms
 
 <PageTitle>Create Chat</PageTitle>
 
@@ -21,56 +25,40 @@
         <label for="name">Name:</label>
         <InputText DisplayName="Name" id="name" @bind-Value="createInput.Name" class="form-control" />
     </div>
+    <br />
 
     <label class="form-label" for="users">Users:</label>
-    <br />
     <div id="users" class="form-group">
-            @foreach (ChatCreateInput.UserCheckbox user in createInput.UserCheckboxes)
-            {
-                <div class="form-check">
-                    <label class="form-check-label" for="@user.Id">@user.Name</label>
-                    <InputCheckbox id="@user.Id" @bind-Value="@user.IsChecked" class="form-check-input" />
-                </div>
-                
-            }
+        <CascadingValue Value="@createInput.UserCheckboxes" Name="UserCheckboxes">
+            <UsersList />
+        </CascadingValue>
     </div>
     <br />
     <input type="submit" class="btn btn-primary" value="Create" />
 </EditForm>
-@string.Join(", ", SelectedIds)
 
 @code {
-    [CascadingParameter] public Task<AuthenticationState> AuthTask { get; set; }
-    private SignInRequest Request = new();
     private EditContext? EditContext;
     private ValidationMessageStore? MessageStore;
     private FieldIdentifier ErrorMessage;
-    private ClaimsPrincipal? User;
-    private List<string> users = new List<string>() { "Alex", "Viorel", "Viorica", "Marcel", "Marcica" };
-    private List<string> SelectedIds { get; } = new List<string>();
-
     private ChatCreateInput createInput = new();
-
-    private void AddUsersToInput()
-    {
-        createInput.UserCheckboxes = users.Select(x => new ChatCreateInput.UserCheckbox()
-        {
-            Id = Guid.NewGuid().ToString(),
-            Name = x,
-            IsChecked = false
-        }).ToList();
-    }
 
     protected override async Task OnInitializedAsync()
     {
-        AddUsersToInput();
-
-        var authState = await AuthTask;
-        User = authState.User;
-        EditContext = new(Request);
+        EditContext = new(createInput);
         EditContext.OnValidationRequested += HandleValidationRequested;
         EditContext.OnFieldChanged += HandleFieldChanged;
         MessageStore = new(EditContext);
+
+        await SetUserCheckboxes();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task SetUserCheckboxes()
+    {
+        var response = await UserRequests.GetAsync();
+
+        createInput.UserCheckboxes = response.Users.ToFeed();
     }
 
     private void HandleValidationRequested(object? sender,
@@ -82,18 +70,10 @@
     private async Task HandleValidSubmit()
     {
         MessageStore?.Clear();
-        var response = await Http.PostAsJsonAsync("/sign-in", Request);
+        var response = await ChatRequests.CreateAsync(createInput.ToRequest());
+        ChatRooms.AddFirst(response.ToFeed());
 
-        if (!response.IsSuccessStatusCode)
-        {
-            MessageStore?.Add(() => ErrorMessage, "Username or Password doesn't match!");
-        }
-        else
-        {
-            var authState = await ((CustomAuthenticationStateProvider)AuthState).ChangeUser(Request.Username);
-            User = authState.User;
-            NavManager.NavigateTo("/");
-        }
+        NavManager.NavigateTo($"/chats/{response.Id}");
     }
 
     private void HandleFieldChanged(object? sender,

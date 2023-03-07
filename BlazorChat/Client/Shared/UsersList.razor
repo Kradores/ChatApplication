@@ -1,0 +1,14 @@
+﻿@using BlazorChat.Client.Models.Feeds.Chat
+
+@foreach (ChatCreateInput.UserCheckbox user in UserCheckboxes)
+{
+    <div class="form-check">
+        <label class="form-check-label" for="@user.Id">@user.Name</label>
+        <InputCheckbox id="@user.Id" @bind-Value="@user.IsChecked" class="form-check-input" />
+    </div>
+}
+
+@code {
+    [CascadingParameter(Name = "UserCheckboxes")]
+    public List<ChatCreateInput.UserCheckbox> UserCheckboxes { get; set; } = new();
+}
