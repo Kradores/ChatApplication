@@ -28,7 +28,10 @@ public class ChatRepository : IChatRepository
 
     public async Task<List<ChatRoom>> GetByUserIdAsync(string userId, CancellationToken cancellationToken)
     {
-        return await _context.ChatRooms.Where(x => x.Users.Any(y => y.Id == userId)).ToListAsync(cancellationToken);
+        return await _context.ChatRooms
+            .Where(x => x.Users.Any(y => y.Id == userId))
+            .OrderByDescending(x => x.CreatedAt)
+            .ToListAsync(cancellationToken);
     }
 
     public Task UpdateAsync(ChatRoom room, CancellationToken cancellationToken)

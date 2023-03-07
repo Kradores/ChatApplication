@@ -7,6 +7,7 @@ using Chat.Domain.Models.Authentication.ValueObjects;
 using UserEntity = Chat.Infrastructure.Entities.User;
 using NotificationEntity = Chat.Infrastructure.Entities.Notification;
 using Chat.Domain.Models.Chat;
+using Chat.Domain.Models.Authentication;
 
 namespace Chat.Domain.Factories;
 

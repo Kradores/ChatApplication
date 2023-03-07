@@ -10,7 +10,7 @@ public class Endpoint : ICarterModule
     public void AddRoutes(IEndpointRouteBuilder app)
     {
         app.MapGet("chat", Handler)
-            .WithName(nameof(GetMany))
+            .WithName(nameof(Chat) + nameof(GetMany))
             .WithTags(nameof(Chat))
             .Produces(StatusCodes.Status200OK, typeof(Response))
             .Produces(StatusCodes.Status401Unauthorized, typeof(void))

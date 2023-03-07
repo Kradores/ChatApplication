@@ -26,6 +26,7 @@ public static class ConfigureIdentity
         {
             o.DefaultScheme = IdentityConstants.ApplicationScheme;
             o.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+            //TODO: someday see with bearer token
         })
         .AddIdentityCookies(o => { });
 

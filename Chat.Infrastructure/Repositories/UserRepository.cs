@@ -19,4 +19,9 @@ public class UserRepository : IUserRepository
     {
         return await _context.Users.Where(x => ids.Contains(x.Id)).ToListAsync(cancellationToken);
     }
+
+    public async Task<List<User>> GetAsync(CancellationToken cancellationToken)
+    {
+        return await _context.Users.ToListAsync(cancellationToken);
+    }
 }

@@ -6,4 +6,5 @@ public interface IUserRepository
 {
     Task<User?> GetAsync(string id, CancellationToken cancellationToken);
     Task<List<User>> GetAsync(IEnumerable<string> ids, CancellationToken cancellationToken);
+    Task<List<User>> GetAsync(CancellationToken cancellationToken);
 }
