@@ -5,7 +5,7 @@ using ChatRoomEntity = Chat.Infrastructure.Entities.ChatRoom;
 
 namespace Chat.Domain.Models.Chat;
 
-public static class MapExtentions
+public static class MapExtensions
 {
     public static ChatRoom ToModel(this ChatRoomEntity entity)
     {

@@ -7,7 +7,7 @@ using MessageEntity = Chat.Infrastructure.Entities.Message;
 
 namespace Chat.Domain.Models.Messages;
 
-public static class MapExtentions
+public static class MapExtensions
 {
     public static Message ToModel(this MessageEntity entity)
     {

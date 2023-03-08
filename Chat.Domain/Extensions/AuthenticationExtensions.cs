@@ -1,9 +1,9 @@
 ﻿using Chat.Domain.Models.Authentication.Aggregates;
 using System.Security.Claims;
 
-namespace Chat.Domain.Extentions;
+namespace Chat.Domain.Extensions;
 
-public static class AuthenticationExtentions
+public static class AuthenticationExtensions
 {
     public static ClaimsPrincipal Convert(this User user)
     {
