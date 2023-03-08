@@ -1,6 +1,7 @@
 ﻿@page "/chats/{id}"
 
 @using Microsoft.AspNetCore.SignalR.Client
+@using BlazorChat.Client.StateContainers
 
 @inject NavigationManager Navigation
 @implements IAsyncDisposable
@@ -8,60 +9,42 @@
 <h3>ChatRoom @Id</h3>
 
 <div class="row">
-    @foreach(string user in users)
+    @foreach (string user in ChatHub.UsersInRoom)
     {
-        <div class="col">@user</div>
+        <div class="col" style="width: fit-content">@user</div>
     }
 </div>
+<div class="form-group">
+    <label>
+        Message:
+        <input @bind="messageInput" size="50" />
+    </label>
+</div>
+<button @onclick="@Send" disabled="@(!ChatHub.IsConnected)">Send</button>
 
+<ul id="messagesList">
+    @foreach (var message in ChatHub.Messages)
+    {
+        <li>@message</li>
+    }
+</ul>
 
 @code {
     [Parameter]
     public string? Id { get; set; } = null;
 
-    private HubConnection? hubConnection;
-    private List<string> messages = new List<string>();
-    private List<string> users = new List<string>();
-
-    public bool IsConnected =>
-        hubConnection?.State == HubConnectionState.Connected;
+    private string? messageInput;
 
     protected override async Task OnInitializedAsync()
     {
-        hubConnection = new HubConnectionBuilder()
-            .WithUrl(Navigation.ToAbsoluteUri("/chathub"))
-            .Build();
-
-        hubConnection.On<string, string>("NotifyUserJoined", (user, id) =>
-        {
-            var encodedMsg = $"{user}";
-            users.Add(encodedMsg);
-            NotifyCallerJoinedAsync(id).Wait();
-            StateHasChanged();
-        });
-
-        hubConnection.On<string>("NotifyCallerJoined", (user) =>
-        {
-            var encodedMsg = $"{user}";
-            users.Add(encodedMsg);
-            StateHasChanged();
-        });
-
-        hubConnection.On<string>("NotifyUserLeft", (user) =>
-        {
-            var encodedMsg = $"{user}";
-            users.Remove(encodedMsg);
-            StateHasChanged();
-        });
-
-        await hubConnection.StartAsync();
+        ChatHub.OnStateChange += StateHasChanged;
     }
 
     public override async Task SetParametersAsync(ParameterView parameters)
     {
         if (Id != null)
         {
-            await RemoveFromGroupAsync();
+            await ChatHub.RemoveFromGroupAsync(Id);
         }
 
         await base.SetParametersAsync(parameters);
@@ -69,42 +52,17 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        await AddToGroupAsync();
-        await base.OnParametersSetAsync();
+        await ChatHub.AddToGroupAsync(Id);
     }
 
-    private async Task NotifyCallerJoinedAsync(string id)
+    private async Task Send()
     {
-        if (hubConnection is not null)
-        {
-            await hubConnection.SendAsync("NotifyCallerJoined", id);
-        }
-    }
-
-    private async Task AddToGroupAsync()
-    {
-        if (hubConnection is not null)
-        {
-            await hubConnection.SendAsync("AddToGroup", Id);
-        }
-    }
-
-    private async Task RemoveFromGroupAsync()
-    {
-        if (hubConnection is not null)
-        {
-            users = new();
-            await hubConnection.SendAsync("RemoveFromGroup", Id);
-        }
+        await ChatHub.SendGroupMessageAsync(Id, messageInput);
     }
 
     public async ValueTask DisposeAsync()
     {
-        await RemoveFromGroupAsync();
-
-        if (hubConnection is not null)
-        {
-            await hubConnection.DisposeAsync();
-        }
+        await ChatHub.RemoveFromGroupAsync(Id);
+        ChatHub.OnStateChange -= StateHasChanged;
     }
 }

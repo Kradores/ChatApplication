@@ -20,7 +20,6 @@ namespace BlazorChat.Client
 
             builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("Chat.API"));
 
-
             builder.Services.AddOidcAuthentication(options =>
             {
                 options.ProviderOptions.Authority = builder.HostEnvironment.BaseAddress;
