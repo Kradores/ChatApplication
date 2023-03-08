@@ -26,6 +26,11 @@ public class ChatRepository : IChatRepository
         return await _context.ChatRooms.Where(x => x.Name == name).SingleOrDefaultAsync(cancellationToken);
     }
 
+    public async Task<ChatRoom?> GetAsync(int id, CancellationToken cancellationToken)
+    {
+        return await _context.ChatRooms.Where(x => x.Id == id).SingleOrDefaultAsync(cancellationToken);
+    }
+
     public async Task<List<ChatRoom>> GetByUserIdAsync(string userId, CancellationToken cancellationToken)
     {
         return await _context.ChatRooms

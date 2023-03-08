@@ -8,5 +8,6 @@ public static class ConfigureRepositories
     public static IServiceCollection AddRepositories(this IServiceCollection services) =>
         services
         .AddScoped<IUserRepository, UserRepository>()
-        .AddScoped<IChatRepository, ChatRepository>();
+        .AddScoped<IChatRepository, ChatRepository>()
+        .AddScoped<IMessageRepository, MessageRepository>();
 }

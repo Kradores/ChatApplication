@@ -1,6 +1,6 @@
-﻿using Chat.Domain.Enums;
+﻿using Chat.Infrastructure.Enums;
 
-namespace Chat.Domain.Models.Message.VaulueObjects;
+namespace Chat.Domain.Models.Messages.VaulueObjects;
 
 public record MessageStatus
 {

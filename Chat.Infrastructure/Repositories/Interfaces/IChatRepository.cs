@@ -8,5 +8,6 @@ public interface IChatRepository
     Task UpdateAsync(ChatRoom room, CancellationToken cancellationToken);
     Task DeleteAsync(string name, CancellationToken cancellationToken);
     Task<ChatRoom?> GetAsync(string name, CancellationToken cancellationToken);
+    Task<ChatRoom?> GetAsync(int id, CancellationToken cancellationToken);
     Task<List<ChatRoom>> GetByUserIdAsync(string userId, CancellationToken cancellationToken);
 }
