@@ -1,32 +1,27 @@
 ﻿using Carter;
 using Chat.Domain.Factories.Interfaces;
+using Chat.Domain.Models.Authentication.ValueObjects;
 using Chat.Domain.Models.ValueObjects;
 
-namespace Chat.API.Endpoints.Chat.GetOne;
+namespace Chat.API.Endpoints.ChatRoom.Create;
 public class Endpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapGet("chat/{name}", Handler)
-            .WithName(nameof(GetOne))
-            .WithTags(nameof(Chat))
+        app.MapPost("chat", Handler)
+            .WithName(nameof(Create))
+            .WithTags(nameof(ChatRoom))
             .Produces(StatusCodes.Status200OK, typeof(Response))
-            .Produces(StatusCodes.Status404NotFound, typeof(void))
             .Produces(StatusCodes.Status401Unauthorized, typeof(void))
             .RequireAuthorization();
     }
 
     private static async Task<IResult> Handler(
-        string name,
+        Request request,
         IChatFactory factory,
         CancellationToken cancellationToken)
     {
-        var room = await factory.GetAsync(Name.From(name), cancellationToken);
-
-        if (room == null)
-        {
-            return Results.NotFound();
-        }
+        var room = await factory.CreateAsync(Name.From(request.Name), request.UserIds.Select(UserId.From), cancellationToken);
 
         return Results.Ok(new Response()
         {

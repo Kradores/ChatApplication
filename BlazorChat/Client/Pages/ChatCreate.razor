@@ -1,18 +1,16 @@
 ﻿@page "/chats/create"
 
-@using BlazorChat.Client.Services;
+@using BlazorChat.Client.Services
 @using BlazorChat.Client.Models.Feeds.Chat
 @using System.Security.Claims
 @using BlazorChat.Client.Requests.Users
 @using BlazorChat.Client.Extensions
 @using BlazorChat.Client.Requests.Chats
 @using BlazorChat.Client.Models.Responses.ChatRooms
-@using BlazorChat.Client.StateContainers;
 
 @inject NavigationManager NavManager
 @inject UserRequests UserRequests
 @inject ChatRequests ChatRequests
-@inject ChatRoomsStateContainer ChatRooms
 
 <PageTitle>Create Chat</PageTitle>
 
@@ -71,7 +69,7 @@
     {
         MessageStore?.Clear();
         var response = await ChatRequests.CreateAsync(createInput.ToRequest());
-        ChatRooms.AddFirst(response.ToFeed());
+        await ChatHub.RequestChatListAsync();
 
         NavManager.NavigateTo($"/chats/{response.Id}");
     }

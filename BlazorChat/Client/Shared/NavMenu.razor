@@ -1,14 +1,6 @@
-﻿@using BlazorChat.Client.Models.Responses.ChatRooms
-@using BlazorChat.Client.Extensions
-@using BlazorChat.Client.Models.Feeds.Chat
-@using BlazorChat.Client.StateContainers;
+﻿@using BlazorChat.Client.Models.Feeds.Chat
 
 @implements IDisposable
-
-@inject HttpClient Http
-@inject AuthenticationStateProvider AuthState
-@inject ChatRoomsStateContainer ChatRooms
-
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
@@ -33,12 +25,7 @@
                         <span class="oi oi-plus" aria-hidden="true"></span> Create New Chat
                     </NavLink>
                 </div>
-                <div hidden="@isHidden" class="nav-item px-3">
-                    <NavLink class="nav-link" href="#" onclick="@(async () => GetChatListAsync)">
-                        <span class="oi oi-action-redo" aria-hidden="true"></span> Refresh
-                    </NavLink>
-                </div>
-                @foreach (ChatRoom chat in ChatRooms.Value)
+                @foreach (ChatRoom chat in ChatHub.ChatRooms)
                 {
                     <div class="nav-item px-3">
                         <NavLink class="nav-link" href="@("chats/" + chat.Id)">
@@ -53,12 +40,6 @@
 
 
 @code {
-    [CascadingParameter]
-    private Task<AuthenticationState>? authenticationState { get; set; }
-
-    //private List<ChatRoom> ChatRooms { get; set; } = new();
-    private bool isHidden = true;
-
     private bool collapseNavMenu = true;
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
@@ -67,53 +48,13 @@
         collapseNavMenu = !collapseNavMenu;
     }
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        var authState = await AuthState.GetAuthenticationStateAsync();
-        var identity = authState.User.Identity;
-
-        AuthState.AuthenticationStateChanged += AuthenticationStateChangedHandler;
-        ChatRooms.OnStateChange += StateHasChanged;
-
-        if (identity?.IsAuthenticated != null && identity?.IsAuthenticated == true)
-        {
-            await GetChatListAsync();
-        }
-    }
-
-    private async Task GetChatListAsync()
-    {
-        isHidden = true;
-        var response = await Http.GetFromJsonAsync<ChatListResponse>("/chat");
-
-        if (response != null)
-        {
-            ChatRooms.Init(response.Rooms.ToFeed());
-            isHidden = true;
-        }
-        else
-        {
-            isHidden = false;
-        }
-    }
-
-    private void AuthenticationStateChangedHandler(Task<AuthenticationState> task)
-    {
-        if (task is not null)
-        {
-            var authState = task.Result;
-            var identity = authState.User.Identity;
-
-            if (identity?.IsAuthenticated != null && identity?.IsAuthenticated == true)
-            {
-                GetChatListAsync().ConfigureAwait(true);
-            }
-        }
+        ChatHub.OnChatListStateChange += StateHasChanged;
     }
 
     public void Dispose()
     {
-        AuthState.AuthenticationStateChanged -= AuthenticationStateChangedHandler;
-        ChatRooms.OnStateChange -= StateHasChanged;
+        ChatHub.OnChatListStateChange += StateHasChanged;
     }
 }

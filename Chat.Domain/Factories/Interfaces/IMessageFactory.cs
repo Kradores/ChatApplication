@@ -9,6 +9,7 @@ namespace Chat.Domain.Factories.Interfaces;
 public interface IMessageFactory
 {
     Task<Message> CreateAsync(UserId senderId, Id chatId, Text text, CancellationToken cancellationToken);
+    Task<Message> CreateAsync(UserId senderId, Name chatName, Text text);
     Task<Message> UpdateAsync(UserId userId, Id messageId, MessageStatus status, CancellationToken cancellationToken);
     Task<List<Message>> GetAsync(Id chatId, Pagination pagination, CancellationToken cancellationToken);
 }

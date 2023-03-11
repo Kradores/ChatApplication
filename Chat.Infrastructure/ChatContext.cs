@@ -22,8 +22,6 @@ public class ChatContext : IdentityDbContext<User>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        //modelBuilder.ApplyConfiguration(new UserEntityTypeConfiguration());
-        //modelBuilder.ApplyConfiguration(new BearerEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new UserReferenceEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new ChatEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new NotificationEntityTypeConfiguration());

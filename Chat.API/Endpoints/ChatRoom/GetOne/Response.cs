@@ -1,4 +1,4 @@
-﻿namespace Chat.API.Endpoints.Chat.GetOne;
+﻿namespace Chat.API.Endpoints.ChatRoom.GetOne;
 
 public class Response
 {

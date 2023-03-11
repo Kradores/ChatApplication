@@ -17,7 +17,7 @@ public static class ConfigureIdentity
             options.Password.RequireDigit = false;
             options.Password.RequiredLength = 4;
         })
-        .AddEntityFrameworkStores<ChatContext>()
+        .AddEntityFrameworkStores<AuthenticationContext>()
         .AddUserManager<UserManager<User>>()
         .AddSignInManager<SignInManager<User>>()
         .AddDefaultTokenProviders();

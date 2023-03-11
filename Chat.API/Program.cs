@@ -19,6 +19,8 @@ namespace ChatApplication
                 .AddWriters()
                 .AddFactories()
                 .AddRepositories()
+                .AddEvents()
+                .AddBackgroundServices()
                 .AddCarter()
                 .AddSignalR();
 

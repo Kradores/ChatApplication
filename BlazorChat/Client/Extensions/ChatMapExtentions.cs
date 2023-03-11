@@ -34,7 +34,7 @@ public static class ChatMapExtentions
         return new()
         {
             Name = input.Name,
-            UserIds = input.UserCheckboxes.Select(x => x.Id).ToList(),
+            UserIds = input.UserCheckboxes.Where(x => x.IsChecked).Select(x => x.Id).ToList(),
         };
     }
 }

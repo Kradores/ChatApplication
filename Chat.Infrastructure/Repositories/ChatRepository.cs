@@ -1,6 +1,7 @@
 ﻿using Chat.Infrastructure.Entities;
 using Chat.Infrastructure.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Threading;
 
 namespace Chat.Infrastructure.Repositories;
 
@@ -12,7 +13,7 @@ public class ChatRepository : IChatRepository
 
     public async Task CreateAsync(ChatRoom room, CancellationToken cancellationToken)
     {
-        await _context.ChatRooms.AddAsync(room);
+        _context.ChatRooms.Update(room);
         await _context.SaveChangesAsync();
     }
 
@@ -24,6 +25,15 @@ public class ChatRepository : IChatRepository
     public async Task<ChatRoom?> GetAsync(string name, CancellationToken cancellationToken)
     {
         return await _context.ChatRooms.Where(x => x.Name == name).SingleOrDefaultAsync(cancellationToken);
+    }
+
+    public async Task<ChatRoom> AttachUsersAsync(ChatRoom chatRoom)
+    {
+        await _context.Entry(chatRoom)
+            .Collection(i => i.Users)
+            .LoadAsync();
+
+        return chatRoom;
     }
 
     public async Task<ChatRoom?> GetAsync(int id, CancellationToken cancellationToken)

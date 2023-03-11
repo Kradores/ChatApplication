@@ -9,5 +9,6 @@ public static class ConfigureFactories
         services
         .AddScoped<IAuthenticationFactory, AuthenticationFactory>()
         .AddScoped<IChatFactory, ChatFactory>()
-        .AddScoped<IUserFactory, UserFactory>();
+        .AddScoped<IUserFactory, UserFactory>()
+        .AddScoped<IMessageFactory, MessageFactory>();
 }

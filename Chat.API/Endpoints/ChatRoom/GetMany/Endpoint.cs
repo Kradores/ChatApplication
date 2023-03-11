@@ -2,16 +2,16 @@
 using Chat.Domain.Factories.Interfaces;
 using Chat.Domain.Models.Authentication.ValueObjects;
 using System.Security.Claims;
-using static Chat.API.Endpoints.Chat.GetMany.Response;
+using static Chat.API.Endpoints.ChatRoom.GetMany.Response;
 
-namespace Chat.API.Endpoints.Chat.GetMany;
+namespace Chat.API.Endpoints.ChatRoom.GetMany;
 public class Endpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
         app.MapGet("chat", Handler)
-            .WithName(nameof(Chat) + nameof(GetMany))
-            .WithTags(nameof(Chat))
+            .WithName(nameof(ChatRoom) + nameof(GetMany))
+            .WithTags(nameof(ChatRoom))
             .Produces(StatusCodes.Status200OK, typeof(Response))
             .Produces(StatusCodes.Status401Unauthorized, typeof(void))
             .Produces(StatusCodes.Status409Conflict, typeof(void))

@@ -1,4 +1,4 @@
-﻿namespace Chat.API.Endpoints.Chat.GetMany;
+﻿namespace Chat.API.Endpoints.ChatRoom.GetMany;
 
 public class Response
 {

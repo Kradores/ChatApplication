@@ -1,4 +1,6 @@
-﻿using BlazorChat.Client.Pages;
+﻿using BlazorChat.Client.Models.Feeds;
+using BlazorChat.Client.Models.Feeds.Chat;
+using BlazorChat.Client.Pages;
 using BlazorChat.Client.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -10,12 +12,17 @@ public class ChatHubStateContainer : IAsyncDisposable
 {
     private readonly CustomAuthenticationStateProvider _stateProvider;
     private readonly string _baseAddress;
-    public HubConnection Connection { get; private set; }
+    private HubConnection Connection;
+
     public event Action OnStateChange;
+    public event Action OnChatListStateChange;
+    public event Action OnMessageListStateChange;
+
     public bool IsConnected =>
         Connection?.State == HubConnectionState.Connected;
     public List<string> UsersInRoom { get; private set; } = new List<string>();
-    public List<string> Messages { get; private set; } = new List<string>();
+    public List<Message> Messages { get; private set; } = new List<Message>();
+    public List<ChatRoom> ChatRooms { get; private set; } = new List<ChatRoom>();
 
     public ChatHubStateContainer(AuthenticationStateProvider stateProvider, IWebAssemblyHostEnvironment environment)
     {
@@ -49,6 +56,8 @@ public class ChatHubStateContainer : IAsyncDisposable
     }
 
     private void NotifyStateChanged() => OnStateChange?.Invoke();
+    private void NotifyChatListStateChanged() => OnChatListStateChange?.Invoke();
+    private void NotifyMessageListStateChanged() => OnMessageListStateChange?.Invoke();
 
     private async Task Init()
     {
@@ -56,10 +65,31 @@ public class ChatHubStateContainer : IAsyncDisposable
             .WithUrl(_baseAddress + "chathub")
             .Build();
 
+        InitManager();
+        ChatsManager();
         NotificationsManager();
         MessagesManager();
 
         await Connection.StartAsync();
+    }
+
+    private void InitManager()
+    {
+        Connection.On("InitConnection", async () =>
+        {
+            await RequestChatListAsync();
+            NotifyChatListStateChanged();
+        });
+    }
+
+    private void ChatsManager()
+    {
+        Connection.On<List<ChatRoom>>("ReceiveChatList", (chats) =>
+        {
+            Console.WriteLine(chats.Count);
+            ChatRooms = chats;
+            NotifyChatListStateChanged();
+        });
     }
 
     private void NotificationsManager()
@@ -68,8 +98,8 @@ public class ChatHubStateContainer : IAsyncDisposable
         {
             var encodedMsg = $"{user}";
             UsersInRoom.Add(encodedMsg);
-            await NotifyCallerJoinedAsync(id);
             NotifyStateChanged();
+            await NotifyCallerJoinedAsync(id);
         });
 
         Connection.On<string>("NotifyCallerJoined", (user) =>
@@ -91,11 +121,12 @@ public class ChatHubStateContainer : IAsyncDisposable
 
     private void MessagesManager()
     {
-        Connection.On<string, string>("ReceiveGroupMessage", (user, message) =>
+        Connection.On<string, Message>("ReceiveGroupMessage", async (user, message) =>
         {
-            var encodedMsg = $"{user}: {message}";
-            Messages.Add(encodedMsg);
-            NotifyStateChanged();
+            message.Text = $"{user}: {message.Text}";
+            Messages.Add(message);
+            NotifyMessageListStateChanged();
+            await NotifyMessageSeenAsync(message.Id);
         });
     }
 
@@ -104,6 +135,22 @@ public class ChatHubStateContainer : IAsyncDisposable
         if (Connection is not null)
         {
             await Connection.SendAsync("NotifyCallerJoined", id);
+        }
+    }
+
+    private async Task NotifyMessageSeenAsync(int id)
+    {
+        if (Connection is not null)
+        {
+            await Connection.SendAsync("NotifyMessageSeen", id);
+        }
+    }
+
+    public async Task RequestChatListAsync()
+    {
+        if (Connection is not null)
+        {
+            await Connection.SendAsync("RequestChatList");
         }
     }
 

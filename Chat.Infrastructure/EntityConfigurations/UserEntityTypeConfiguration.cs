@@ -14,13 +14,8 @@ public class UserEntityTypeConfiguration : IEntityTypeConfiguration<User>
 
         builder.Property(x => x.Id).ValueGeneratedOnAdd();
 
-        //builder.HasIndex(x => x.Username).IsUnique();
-
-        builder.HasMany(x => x.ChatRooms)
+        builder.HasMany<ChatRoom>()
             .WithMany(x => x.Users)
             .UsingEntity<UserReference>();
-
-        //builder.HasOne(x => x.Bearer)
-        //    .WithOne();
     }
 }

@@ -25,7 +25,7 @@
 <ul id="messagesList">
     @foreach (var message in ChatHub.Messages)
     {
-        <li>@message</li>
+        <li>@message.Text</li>
     }
 </ul>
 
@@ -38,6 +38,7 @@
     protected override async Task OnInitializedAsync()
     {
         ChatHub.OnStateChange += StateHasChanged;
+        ChatHub.OnMessageListStateChange += StateHasChanged;
     }
 
     public override async Task SetParametersAsync(ParameterView parameters)
@@ -64,5 +65,6 @@
     {
         await ChatHub.RemoveFromGroupAsync(Id);
         ChatHub.OnStateChange -= StateHasChanged;
+        ChatHub.OnMessageListStateChange -= StateHasChanged;
     }
 }

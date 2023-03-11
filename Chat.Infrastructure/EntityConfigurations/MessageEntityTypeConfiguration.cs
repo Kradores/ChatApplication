@@ -24,7 +24,7 @@ public class MessageEntityTypeConfiguration : IEntityTypeConfiguration<Message>
             .HasForeignKey(x => x.ChatRoomId)
             .OnDelete(DeleteBehavior.NoAction);
 
-        builder.HasMany<MessageProperty>()
+        builder.HasMany(x => x.Properties)
             .WithOne()
             .HasForeignKey(x => x.MessageId)
             .OnDelete(DeleteBehavior.Cascade);

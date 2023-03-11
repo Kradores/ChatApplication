@@ -9,4 +9,5 @@ public interface IMessageRepository
     Task UpdateAsync(Message message);
     Task<List<Message>> GetAsync(int chatId, Pagination pagination, CancellationToken cancellationToken);
     Task<Message?> GetAsync(int id, CancellationToken cancellationToken);
+    Task<Message> AttachPropertiesAsync(Message message);
 }

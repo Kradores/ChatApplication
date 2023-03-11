@@ -10,4 +10,5 @@ public interface IChatRepository
     Task<ChatRoom?> GetAsync(string name, CancellationToken cancellationToken);
     Task<ChatRoom?> GetAsync(int id, CancellationToken cancellationToken);
     Task<List<ChatRoom>> GetByUserIdAsync(string userId, CancellationToken cancellationToken);
+    Task<ChatRoom> AttachUsersAsync(ChatRoom chatRoom);
 }

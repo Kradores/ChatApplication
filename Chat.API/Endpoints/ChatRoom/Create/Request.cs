@@ -1,4 +1,4 @@
-﻿namespace Chat.API.Endpoints.Chat.Create;
+﻿namespace Chat.API.Endpoints.ChatRoom.Create;
 
 public class Request
 {

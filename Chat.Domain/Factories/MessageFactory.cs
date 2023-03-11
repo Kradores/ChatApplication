@@ -42,6 +42,8 @@ public class MessageFactory : IMessageFactory
             throw new ArgumentNullException(nameof(chatEntity));
         }
 
+        await _chatRepository.AttachUsersAsync(chatEntity);
+
         var properties = chatEntity.Users.Select(x => new MessagePropertyEntity()
         {
             SenderId = senderId.Value,
@@ -53,6 +55,46 @@ public class MessageFactory : IMessageFactory
         {
             UserId = senderId.Value,
             ChatRoomId = chatId.Value,
+            Data = text.Value,
+            Properties = properties
+        };
+
+        await _messageRepository.CreateAsync(messageEntity);
+
+        return messageEntity.ToModel();
+    }
+
+    public async Task<Message> CreateAsync(UserId senderId, Name chatName, Text text)
+    {
+        var senderEntityTask = _userRepository.GetAsync(senderId.Value, default);
+        var chatEntityTask = _chatRepository.GetAsync(chatName.Value, default);
+
+        var senderEntity = await senderEntityTask;
+        var chatEntity = await chatEntityTask;
+
+        if (senderEntity == null)
+        {
+            throw new ArgumentNullException(nameof(senderEntity));
+        }
+
+        if (chatEntity == null)
+        {
+            throw new ArgumentNullException(nameof(chatEntity));
+        }
+
+        await _chatRepository.AttachUsersAsync(chatEntity);
+
+        var properties = chatEntity.Users.Select(x => new MessagePropertyEntity()
+        {
+            SenderId = senderId.Value,
+            ReceiverId = x.Id,
+            ChatRoomId = chatEntity.Id,
+        }).ToList();
+
+        var messageEntity = new MessageEntity()
+        {
+            UserId = senderId.Value,
+            ChatRoomId = chatEntity.Id,
             Data = text.Value,
             Properties = properties
         };
@@ -94,12 +136,28 @@ public class MessageFactory : IMessageFactory
             throw new ArgumentNullException(nameof(messageEntity));
         }
 
+        await _messageRepository.AttachPropertiesAsync(messageEntity);
+
         var message = messageEntity.ToModel();
 
         message.UpdatePropertyStatus(userId, status);
+        UpdateTrackedEntity(messageEntity, message);
 
-        await _messageRepository.UpdateAsync(message.ToEntity());
+        await _messageRepository.UpdateAsync(messageEntity);
 
         return message;
+    }
+
+    private static void UpdateTrackedEntity(MessageEntity entity, Message model)
+    {
+        foreach (var propertyEntity in entity.Properties)
+        {
+            var propertyModel = model.Properties.Where(x => x.Id.Value ==  propertyEntity.Id).FirstOrDefault();
+
+            if (propertyModel != null)
+            {
+                propertyEntity.Status = propertyModel.Status.Value;
+            }
+        }
     }
 }

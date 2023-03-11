@@ -17,7 +17,7 @@ public class ChatEntityTypeConfiguration : IEntityTypeConfiguration<ChatRoom>
         builder.HasIndex(x => x.Name).IsUnique();
 
         builder.HasMany(x => x.Users)
-            .WithMany(x => x.ChatRooms)
+            .WithMany()
             .UsingEntity<UserReference>();
 
         builder.HasMany(x => x.Notifications)

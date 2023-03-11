@@ -12,16 +12,16 @@ public class UserRepository : IUserRepository
 
     public async Task<User?> GetAsync(string id, CancellationToken cancellationToken)
     {
-        return await _context.Users.FindAsync(id, cancellationToken);
+        return await _context.Users.AsNoTracking().Where(x => x.Id == id).SingleOrDefaultAsync(cancellationToken);
     }
 
     public async Task<List<User>> GetAsync(IEnumerable<string> ids, CancellationToken cancellationToken)
     {
-        return await _context.Users.Where(x => ids.Contains(x.Id)).ToListAsync(cancellationToken);
+        return await _context.Users.AsNoTracking().Where(x => ids.Contains(x.Id)).ToListAsync(cancellationToken);
     }
 
     public async Task<List<User>> GetAsync(CancellationToken cancellationToken)
     {
-        return await _context.Users.ToListAsync(cancellationToken);
+        return await _context.Users.AsNoTracking().ToListAsync(cancellationToken);
     }
 }
