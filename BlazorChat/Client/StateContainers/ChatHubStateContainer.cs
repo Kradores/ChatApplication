@@ -1,5 +1,8 @@
-﻿using BlazorChat.Client.Models.Feeds;
+﻿using BlazorChat.Client.Extensions;
+using BlazorChat.Client.Models.Feeds;
 using BlazorChat.Client.Models.Feeds.Chat;
+using BlazorChat.Client.Models.Requests.ChatRooms;
+using BlazorChat.Client.Models.Responses.ChatRooms;
 using BlazorChat.Client.Pages;
 using BlazorChat.Client.Services;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -84,10 +87,15 @@ public class ChatHubStateContainer : IAsyncDisposable
 
     private void ChatsManager()
     {
-        Connection.On<List<ChatRoom>>("ReceiveChatList", (chats) =>
+        Connection.On<ChatListResponse>("ReceiveChatList", (response) =>
         {
-            Console.WriteLine(chats.Count);
-            ChatRooms = chats;
+            ChatRooms = response.Rooms.ToFeed();
+            NotifyChatListStateChanged();
+        });
+
+        Connection.On<ChatCreateResponse>("ReceiveCreatedChat", (response) =>
+        {
+            ChatRooms.Insert(0, response.ToFeed());
             NotifyChatListStateChanged();
         });
     }
@@ -151,6 +159,14 @@ public class ChatHubStateContainer : IAsyncDisposable
         if (Connection is not null)
         {
             await Connection.SendAsync("RequestChatList");
+        }
+    }
+
+    public async Task RequestCreateChatAsync(ChatCreateRequest request)
+    {
+        if (Connection is not null)
+        {
+            await Connection.SendAsync("RequestCreateChat", request);
         }
     }
 

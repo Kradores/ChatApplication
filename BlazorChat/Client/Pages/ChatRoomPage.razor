@@ -35,7 +35,7 @@
 
     private string? messageInput;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         ChatHub.OnStateChange += StateHasChanged;
         ChatHub.OnMessageListStateChange += StateHasChanged;
@@ -43,27 +43,26 @@
 
     public override async Task SetParametersAsync(ParameterView parameters)
     {
-        if (Id != null)
-        {
-            await ChatHub.RemoveFromGroupAsync(Id);
-        }
-
+        if (!string.IsNullOrEmpty(Id)) await ChatHub.RemoveFromGroupAsync(Id);
         await base.SetParametersAsync(parameters);
     }
 
     protected override async Task OnParametersSetAsync()
     {
-        await ChatHub.AddToGroupAsync(Id);
+        if (!string.IsNullOrEmpty(Id)) await ChatHub.AddToGroupAsync(Id);
     }
 
     private async Task Send()
     {
-        await ChatHub.SendGroupMessageAsync(Id, messageInput);
+        if (!string.IsNullOrEmpty(Id) && !string.IsNullOrEmpty(messageInput))
+        {
+            await ChatHub.SendGroupMessageAsync(Id, messageInput);
+        }
     }
 
     public async ValueTask DisposeAsync()
     {
-        await ChatHub.RemoveFromGroupAsync(Id);
+        if (!string.IsNullOrEmpty(Id)) await ChatHub.RemoveFromGroupAsync(Id);
         ChatHub.OnStateChange -= StateHasChanged;
         ChatHub.OnMessageListStateChange -= StateHasChanged;
     }

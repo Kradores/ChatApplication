@@ -25,13 +25,34 @@ public class ChatHub : Hub
         if (Context.UserIdentifier is not null)
         {
             var chats = await chatFactory.GetAsync(UserId.From(Context.UserIdentifier), default);
-            var response = chats.Select(x => new ChatArg()
+            var response = new Endpoints.ChatRoom.GetMany.Response()
             {
-                Id = x.Id.Value,
-                Name = x.Name.Value
-            }).ToList();
+                Rooms = chats.Select(x => new Endpoints.ChatRoom.GetMany.Response.Room()
+                {
+                    Id = x.Id.Value,
+                    Name = x.Name.Value
+                }).ToList()
+            };
 
             await Clients.User(Context.UserIdentifier).SendAsync("ReceiveChatList", response);
+        }
+    }
+
+    public async Task RequestCreateChat(Endpoints.ChatRoom.Create.Request request, IChatFactory chatFactory)
+    {
+        if (Context.UserIdentifier is not null)
+        {
+            var room = await chatFactory.CreateAsync(Name.From(request.Name), request.UserIds.Select(UserId.From), default);
+            var response = new Endpoints.ChatRoom.Create.Response()
+            {
+                Id = room.Id.Value,
+                Name = room.Name.Value
+            };
+
+            foreach (var user in  room.Users)
+            {
+                await Clients.User(user.Id.Value).SendAsync("ReceiveCreatedChat", response);
+            }
         }
     }
 

@@ -55,6 +55,6 @@
 
     public void Dispose()
     {
-        ChatHub.OnChatListStateChange += StateHasChanged;
+        ChatHub.OnChatListStateChange -= StateHasChanged;
     }
 }

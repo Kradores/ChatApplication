@@ -17,8 +17,8 @@ public static class MapExtensions
         var users = entity.Users.Select(x => new User()
         {
             Id = UserId.From(x.Id),
-            Username = Username.From(x.UserName),
-            Password = Password.From(x.PasswordHash)
+            Username = Username.From(x.UserName!),
+            Password = Password.From(x.PasswordHash!)
         }).ToList();
 
         return new(

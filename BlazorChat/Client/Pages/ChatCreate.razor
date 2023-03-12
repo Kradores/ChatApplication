@@ -1,16 +1,11 @@
 ﻿@page "/chats/create"
 
-@using BlazorChat.Client.Services
 @using BlazorChat.Client.Models.Feeds.Chat
-@using System.Security.Claims
 @using BlazorChat.Client.Requests.Users
 @using BlazorChat.Client.Extensions
-@using BlazorChat.Client.Requests.Chats
-@using BlazorChat.Client.Models.Responses.ChatRooms
 
 @inject NavigationManager NavManager
 @inject UserRequests UserRequests
-@inject ChatRequests ChatRequests
 
 <PageTitle>Create Chat</PageTitle>
 
@@ -68,10 +63,9 @@
     private async Task HandleValidSubmit()
     {
         MessageStore?.Clear();
-        var response = await ChatRequests.CreateAsync(createInput.ToRequest());
-        await ChatHub.RequestChatListAsync();
+        await ChatHub.RequestCreateChatAsync(createInput.ToRequest());
 
-        NavManager.NavigateTo($"/chats/{response.Id}");
+        NavManager.NavigateTo("/");
     }
 
     private void HandleFieldChanged(object? sender,
