@@ -60,6 +60,7 @@ public class MessageFactory : IMessageFactory
         };
 
         await _messageRepository.CreateAsync(messageEntity);
+        await _messageRepository.AttachUserAsync(messageEntity);
 
         return messageEntity.ToModel();
     }

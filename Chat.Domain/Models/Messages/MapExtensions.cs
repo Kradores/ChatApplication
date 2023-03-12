@@ -21,13 +21,27 @@ public static class MapExtensions
             Status = MessageStatus.From(x.Status)
         }).ToList();
 
-        return new(Id.From(entity.Id),
-            UserId.From(entity.UserId),
-            entity.User.ToModel(),
-            Id.From(entity.ChatRoomId),
-            Text.From(entity.Data),
-            CreatedAt.From(entity.CreatedAt),
-            entity.Properties.ToModel());
+        // a message always has a user, but for performance reasons it isn't always loaded
+        if (entity.User is not null)
+        {
+            return new(Id.From(entity.Id),
+                UserId.From(entity.UserId),
+                entity.User.ToModel(),
+                Id.From(entity.ChatRoomId),
+                Text.From(entity.Data),
+                CreatedAt.From(entity.CreatedAt),
+                entity.Properties.ToModel());
+        }
+        else
+        {
+            return new(Id.From(entity.Id),
+                UserId.From(entity.UserId),
+                Id.From(entity.ChatRoomId),
+                Text.From(entity.Data),
+                CreatedAt.From(entity.CreatedAt),
+                entity.Properties.ToModel());
+        }
+        
     }
 
     public static List<Message> ToModel(this List<MessageEntity> entities)

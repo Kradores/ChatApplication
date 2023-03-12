@@ -136,7 +136,7 @@ public class ChatHubStateContainer : IAsyncDisposable
     {
         Connection.On<Message>("ReceiveGroupMessage", async (message) =>
         {
-            Messages.Add(message);
+            Messages.Insert(0, message);
             NotifyMessageListStateChanged();
             await NotifyMessageSeenAsync(message.Id);
         });

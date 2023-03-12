@@ -11,15 +11,20 @@ public class Message : IAggregateRoot
 
     public Message() => _properties = new List<Property>();
 
-    public Message(Id id, UserId userId, User user, Id chatId, Text text, CreatedAt createdAt, List<Property> properties)
+    public Message(Id id, UserId userId, Id chatId, Text text, CreatedAt createdAt, List<Property> properties)
     {
         Id = id;
         UserId = userId;
-        User = user;
         ChatId = chatId;
         Text = text;
         CreatedAt = createdAt;
         _properties = properties;
+    }
+
+    public Message(Id id, UserId userId, User user, Id chatId, Text text, CreatedAt createdAt, List<Property> properties)
+        : this(id, userId, chatId, text, createdAt, properties)
+    {
+        User = user;
     }
 
     public Id Id { get; init; } = null!;

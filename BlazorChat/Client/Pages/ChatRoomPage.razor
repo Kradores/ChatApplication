@@ -4,6 +4,7 @@
 @using Microsoft.AspNetCore.SignalR.Client
 @using BlazorChat.Client.StateContainers
 @using BlazorChat.Client.Extensions
+@using BlazorChat.Client.Models.Feeds.Messages
 
 @inject MessagesApi api
 @inject NavigationManager Navigation
@@ -11,19 +12,18 @@
 
 <h3>ChatRoom @Id</h3>
 
-<div class="row">
-    @foreach (string user in ChatHub.UsersInRoom)
-    {
-        <div class="col" style="width: fit-content">@user</div>
-    }
-</div>
-<div class="form-group">
-    <label>
-        Message:
-        <input @bind="messageInput" size="50" />
-    </label>
-</div>
-<button @onclick="@Send" disabled="@(!ChatHub.IsConnected)">Send</button>
+<EditForm Model="@Message" OnValidSubmit="@Send">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="row">
+        <div class="form-group col">
+            <InputText DisplayName="Text" id="text" @bind-Value="Message.Text" class="form-control" />
+        </div>
+        <div class="col-1">
+            <input type="submit" class="btn btn-primary" style="float:right" value="Send" />
+        </div>
+    </div>
+</EditForm>
 
 <ul id="messagesList">
     @foreach (var message in ChatHub.Messages)
@@ -36,7 +36,7 @@
     [Parameter]
     public string? Id { get; set; } = null;
 
-    private string? messageInput;
+    private MessageInput Message { get; set; } = new();
 
     protected override void OnInitialized()
     {
@@ -73,10 +73,10 @@
 
     private async Task Send()
     {
-        if (!string.IsNullOrEmpty(Id) && !string.IsNullOrEmpty(messageInput))
+        if (!string.IsNullOrEmpty(Id))
         {
-            await ChatHub.SendGroupMessageAsync(Id, messageInput);
-            messageInput = string.Empty;
+            await ChatHub.SendGroupMessageAsync(Id, Message.Text);
+            Message.Text = string.Empty;
         }
     }
 
