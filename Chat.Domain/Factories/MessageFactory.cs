@@ -43,6 +43,12 @@ public class MessageFactory : IMessageFactory
         }
 
         await _chatRepository.AttachUsersAsync(chatEntity);
+        await _chatRepository.AttachNotificationsAsync(chatEntity);
+
+        foreach (var notif in chatEntity.Notifications)
+        {
+            notif.UnreadMessages++;
+        }
 
         var properties = chatEntity.Users.Select(x => new MessagePropertyEntity()
         {
@@ -60,6 +66,7 @@ public class MessageFactory : IMessageFactory
         };
 
         await _messageRepository.CreateAsync(messageEntity);
+        await _chatRepository.UpdateAsync(cancellationToken);
         await _messageRepository.AttachUserAsync(messageEntity);
 
         return messageEntity.ToModel();

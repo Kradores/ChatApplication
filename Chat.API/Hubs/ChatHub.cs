@@ -1,5 +1,4 @@
-﻿using Chat.API.Hubs.SendArguments;
-using Chat.Domain.Factories.Interfaces;
+﻿using Chat.Domain.Factories.Interfaces;
 using Chat.Domain.Models.Authentication.ValueObjects;
 using Chat.Domain.Models.Messages.VaulueObjects;
 using Chat.Domain.Models.ValueObjects;
@@ -30,7 +29,8 @@ public class ChatHub : Hub
                 Rooms = chats.Select(x => new Endpoints.ChatRoom.GetMany.Response.Room()
                 {
                     Id = x.Id.Value,
-                    Name = x.Name.Value
+                    Name = x.Name.Value,
+                    UnreadMessages = x.Notifications.FirstOrDefault(y => y.UserId.Value == Context.UserIdentifier)?.UnreadMessagesCount.Value ?? 0
                 }).ToList()
             };
 
@@ -46,7 +46,8 @@ public class ChatHub : Hub
             var response = new Endpoints.ChatRoom.Create.Response()
             {
                 Id = room.Id.Value,
-                Name = room.Name.Value
+                Name = room.Name.Value,
+                UnreadMessages = 0
             };
 
             foreach (var user in  room.Users)

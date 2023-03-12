@@ -12,6 +12,7 @@ public static class ChatMapExtensions
         {
             Id = chat.Id,
             Name = chat.Name,
+            UnreadMessages = chat.UnreadMessages,
         };
     }
 
@@ -21,6 +22,7 @@ public static class ChatMapExtensions
         {
             Id = chat.Id,
             Name = chat.Name,
+            UnreadMessages = chat.UnreadMessages,
         };
     }
 

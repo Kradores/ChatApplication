@@ -59,6 +59,10 @@ public class ChatFactory : IChatFactory
     public async Task<List<ChatRoom>> GetAsync(UserId userId, CancellationToken cancellationToken)
     {
         var entities = await _chatRepository.GetByUserIdAsync(userId.Value, cancellationToken);
+        foreach (var entity in entities)
+        {
+            await _chatRepository.AttachNotificationsAsync(entity);
+        }
 
         return entities.Select(x => x.ToModel()).ToList();
     }

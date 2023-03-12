@@ -36,6 +36,15 @@ public class ChatRepository : IChatRepository
         return chatRoom;
     }
 
+    public async Task<ChatRoom> AttachNotificationsAsync(ChatRoom chatRoom)
+    {
+        await _context.Entry(chatRoom)
+            .Collection(i => i.Notifications)
+            .LoadAsync();
+
+        return chatRoom;
+    }
+
     public async Task<ChatRoom?> GetAsync(int id, CancellationToken cancellationToken)
     {
         return await _context.ChatRooms.Where(x => x.Id == id).SingleOrDefaultAsync(cancellationToken);
@@ -49,8 +58,8 @@ public class ChatRepository : IChatRepository
             .ToListAsync(cancellationToken);
     }
 
-    public Task UpdateAsync(ChatRoom room, CancellationToken cancellationToken)
+    public async Task UpdateAsync(CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        await _context.SaveChangesAsync(cancellationToken);
     }
 }

@@ -5,37 +5,50 @@
 @using BlazorChat.Client.StateContainers
 @using BlazorChat.Client.Extensions
 @using BlazorChat.Client.Models.Feeds.Messages
+@using BlazorChat.Client.Models.Feeds.Chat
 
 @inject MessagesApi api
 @inject NavigationManager Navigation
 @implements IAsyncDisposable
 
-<h3>ChatRoom @Id</h3>
+<AuthorizeView>
+    <Authorized>
+        <h3>ChatRoom @ChatRoom?.Name</h3>
 
-<EditForm Model="@Message" OnValidSubmit="@Send">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-    <div class="row">
-        <div class="form-group col">
-            <InputText DisplayName="Text" id="text" @bind-Value="Message.Text" class="form-control" />
+        <div class="message-list-container">
+            @foreach (var message in ChatHub.Messages)
+            {
+                <div class="message-container">
+                    <span style="width:100%;font-weight: bold;">@message.SenderName</span>
+                    <p>@message.Text</p>
+                    <span class="time-right">@message.CreatedAt</span>
+                </div>
+            }
+        <div></div>
         </div>
-        <div class="col-1">
-            <input type="submit" class="btn btn-primary" style="float:right" value="Send" />
-        </div>
-    </div>
-</EditForm>
 
-<ul id="messagesList">
-    @foreach (var message in ChatHub.Messages)
-    {
-        <li>@($"{message.CreatedAt} {message.SenderName}: {message.Text}")</li>
-    }
-</ul>
+        <EditForm Model="@Message" OnValidSubmit="@Send" class="message-input-form">
+            <ChildContent Context="EditContext">
+                <DataAnnotationsValidator />
+                <div class="row">
+                    <div class="form-group col">
+                        <InputText DisplayName="Text" id="text" @bind-Value="Message.Text" class="form-control" />
+                    </div>
+                    <div class="col-1">
+                        <input type="submit" class="btn btn-primary" style="float:right" value="Send" />
+                    </div>
+                </div>
+            </ChildContent>
+        </EditForm>
+    </Authorized>
+</AuthorizeView>
+
 
 @code {
     [Parameter]
     public string? Id { get; set; } = null;
 
+    private ChatRoom ChatRoom { get; set; } = new();
     private MessageInput Message { get; set; } = new();
 
     protected override void OnInitialized()
@@ -59,6 +72,7 @@
         if (!string.IsNullOrEmpty(Id))
         {
             await ChatHub.AddToGroupAsync(Id);
+            ChatRoom = ChatHub.ChatRooms.First(x => x.Id == int.Parse(Id));
 
             var response = await api.GetAsync(new()
                 {

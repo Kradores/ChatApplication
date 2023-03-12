@@ -1,0 +1,33 @@
+﻿.message-container {
+    border: 2px solid #dedede;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+.message-container::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+.time-right {
+    float: right;
+    color: #aaa;
+}
+
+.message-input-form {
+    position: fixed;
+    bottom: 0;
+    width: calc(100% - 300px);
+    background-color: white;
+    padding-top: 25px;
+    padding-bottom: 25px;
+}
+
+.message-list-container {
+    display: flex;
+    flex-direction: column-reverse;
+    padding-bottom: 80px;
+}
