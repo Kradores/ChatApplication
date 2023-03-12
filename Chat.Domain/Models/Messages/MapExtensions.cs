@@ -4,6 +4,7 @@ using Chat.Domain.Models.Messages.VaulueObjects;
 using Chat.Domain.Models.ValueObjects;
 using MessagePropertyEntity = Chat.Infrastructure.Entities.MessageProperty;
 using MessageEntity = Chat.Infrastructure.Entities.Message;
+using Chat.Domain.Models.Authentication;
 
 namespace Chat.Domain.Models.Messages;
 
@@ -22,6 +23,7 @@ public static class MapExtensions
 
         return new(Id.From(entity.Id),
             UserId.From(entity.UserId),
+            entity.User.ToModel(),
             Id.From(entity.ChatRoomId),
             Text.From(entity.Data),
             CreatedAt.From(entity.CreatedAt),

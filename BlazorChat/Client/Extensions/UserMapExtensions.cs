@@ -3,7 +3,7 @@ using BlazorChat.Client.Models.Responses.Users;
 
 namespace BlazorChat.Client.Extensions;
 
-public static class UserMapExtentions
+public static class UserMapExtensions
 {
     public static ChatCreateInput.UserCheckbox ToFeed(this UsersListResponse.User user)
     {

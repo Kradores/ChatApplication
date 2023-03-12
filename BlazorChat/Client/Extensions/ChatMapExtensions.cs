@@ -4,7 +4,7 @@ using BlazorChat.Client.Models.Responses.ChatRooms;
 
 namespace BlazorChat.Client.Extensions;
 
-public static class ChatMapExtentions
+public static class ChatMapExtensions
 {
     public static ChatRoom ToFeed(this ChatCreateResponse chat)
     {

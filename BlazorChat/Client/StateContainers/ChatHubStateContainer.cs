@@ -1,6 +1,6 @@
 ﻿using BlazorChat.Client.Extensions;
-using BlazorChat.Client.Models.Feeds;
 using BlazorChat.Client.Models.Feeds.Chat;
+using BlazorChat.Client.Models.Feeds.Messages;
 using BlazorChat.Client.Models.Requests.ChatRooms;
 using BlazorChat.Client.Models.Responses.ChatRooms;
 using BlazorChat.Client.Pages;
@@ -53,9 +53,14 @@ public class ChatHubStateContainer : IAsyncDisposable
         UsersInRoom = new();
     }
 
-    private void ClearMessages()
+    public void ClearMessages()
     {
         Messages = new();
+    }
+
+    public void InitMessages(List<Message> messages)
+    {
+        Messages = messages;
     }
 
     private void NotifyStateChanged() => OnStateChange?.Invoke();
@@ -129,9 +134,8 @@ public class ChatHubStateContainer : IAsyncDisposable
 
     private void MessagesManager()
     {
-        Connection.On<string, Message>("ReceiveGroupMessage", async (user, message) =>
+        Connection.On<Message>("ReceiveGroupMessage", async (message) =>
         {
-            message.Text = $"{user}: {message.Text}";
             Messages.Add(message);
             NotifyMessageListStateChanged();
             await NotifyMessageSeenAsync(message.Id);

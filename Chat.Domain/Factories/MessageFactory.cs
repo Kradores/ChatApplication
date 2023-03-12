@@ -114,7 +114,12 @@ public class MessageFactory : IMessageFactory
         }
 
         var messages = await _messageRepository.GetAsync(chatId.Value, pagination, cancellationToken);
-        
+
+        foreach (var message in messages)
+        {
+            await _messageRepository.AttachUserAsync(message);
+        }
+
         return messages.ToModel();
     }
 

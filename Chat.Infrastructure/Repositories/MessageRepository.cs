@@ -20,6 +20,15 @@ public class MessageRepository : IMessageRepository
         return message;
     }
 
+    public async Task<Message> AttachUserAsync(Message message)
+    {
+        await _context.Entry(message)
+            .Reference(x => x.User)
+            .LoadAsync();
+
+        return message;
+    }
+
     public async Task CreateAsync(Message message)
     {
         _context.Messages.Update(message);
@@ -29,7 +38,6 @@ public class MessageRepository : IMessageRepository
     public async Task<List<Message>> GetAsync(int chatId, Pagination pagination, CancellationToken cancellationToken)
     {
         return await _context.Messages
-            .AsNoTracking()
             .Where(x => x.ChatRoomId == chatId)
             .OrderByDescending(x => x.CreatedAt)
             .Skip(pagination.Skip)

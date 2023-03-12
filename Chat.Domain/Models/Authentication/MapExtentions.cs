@@ -16,7 +16,8 @@ public static class MapExtentions
         return new User()
         {
             Id = UserId.From(entity.Id),
-            Username = Username.From(entity.UserName)
+            Username = Username.From(entity.UserName),
+            Password = Password.From(entity.PasswordHash!)
         };
     }
 }

@@ -1,4 +1,5 @@
-﻿using Chat.Domain.Models.Authentication.ValueObjects;
+﻿using Chat.Domain.Models.Authentication.Aggregates;
+using Chat.Domain.Models.Authentication.ValueObjects;
 using Chat.Domain.Models.Messages.VaulueObjects;
 using Chat.Domain.Models.ValueObjects;
 
@@ -10,10 +11,11 @@ public class Message : IAggregateRoot
 
     public Message() => _properties = new List<Property>();
 
-    public Message(Id id, UserId userId, Id chatId, Text text, CreatedAt createdAt, List<Property> properties)
+    public Message(Id id, UserId userId, User user, Id chatId, Text text, CreatedAt createdAt, List<Property> properties)
     {
         Id = id;
         UserId = userId;
+        User = user;
         ChatId = chatId;
         Text = text;
         CreatedAt = createdAt;
@@ -26,6 +28,7 @@ public class Message : IAggregateRoot
     public Text Text { get; init; } = null!;
     public CreatedAt CreatedAt { get; init; } = CreatedAt.Default;
     public ICollection<Property> Properties => _properties;
+    public User User { get; init; } = null!;
 
     public void Add(Property property)
     {

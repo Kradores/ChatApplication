@@ -73,10 +73,13 @@ public class ChatHub : Hub
                 Id.From(int.Parse(roomId)),
                 Text.From(text), default);
 
-            await Clients.Group(roomId).SendAsync("ReceiveGroupMessage", Context.User.Identity.Name, new MessageArg()
+            await Clients.Group(roomId).SendAsync("ReceiveGroupMessage", new Endpoints.Messages.GetMany.Response.Message()
             {
                 Id = message.Id.Value,
-                Text = message.Text.Value
+                ChatRoomId = message.Id.Value,
+                Text = message.Text.Value,
+                CreatedAt = message.CreatedAt.Value.ToString("yyyy-MM-dd HH:mm:ss"),
+                SenderName = message.User.Username.Value
             });
         }
     }

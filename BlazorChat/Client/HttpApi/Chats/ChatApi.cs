@@ -4,11 +4,11 @@ using System.Net.Http.Json;
 
 namespace BlazorChat.Client.Requests.Chats;
 
-public class ChatRequests
+public class ChatApi
 {
     private readonly HttpClient _httpClient;
 
-    public ChatRequests(HttpClient httpClient)
+    public ChatApi(HttpClient httpClient)
     {
         _httpClient = httpClient;
     }
