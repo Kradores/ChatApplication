@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Chat.Infrastructure;
 
-public class ChatContext : IdentityDbContext<User>
+public class ChatContext : DbContext
 {
     public const string CHAT_SCHEMA = "chat";
     public const string DEFAULT_SCHEMA = "generic";
@@ -13,7 +13,7 @@ public class ChatContext : IdentityDbContext<User>
 
     public ChatContext(DbContextOptions<ChatContext> options) : base(options) { }
 
-    //public DbSet<User> Users => Set<User>();
+    public DbSet<User> Users => Set<User>();
     public DbSet<ChatRoom> ChatRooms => Set<ChatRoom>();
     public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<Message> Messages => Set<Message>();
@@ -22,6 +22,7 @@ public class ChatContext : IdentityDbContext<User>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.ApplyConfiguration(new UserEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new UserReferenceEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new ChatEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new NotificationEntityTypeConfiguration());

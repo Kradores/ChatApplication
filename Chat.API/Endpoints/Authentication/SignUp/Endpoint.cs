@@ -11,7 +11,7 @@ public class Endpoint : ICarterModule
         app.MapPost("sign-up", Handler)
             .WithName(nameof(SignUp))
             .WithTags(nameof(Authentication))
-            .Produces(StatusCodes.Status200OK, typeof(void))
+            .Produces(StatusCodes.Status200OK, typeof(TokenResponse))
             .Produces(StatusCodes.Status401Unauthorized, typeof(void))
             .AllowAnonymous();
     }
@@ -29,9 +29,9 @@ public class Endpoint : ICarterModule
 
         var result = await factory.SignUpAsync(user, cancellationToken);
 
-        if (result.Errors.Any())
+        if (result == null)
         {
-            return Results.BadRequest(result.Errors);
+            return Results.BadRequest();
         }
 
         return Results.Ok(result);

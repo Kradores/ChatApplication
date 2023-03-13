@@ -22,15 +22,15 @@ public static class ConfigureIdentity
         .AddSignInManager<SignInManager<User>>()
         .AddDefaultTokenProviders();
 
-        services.AddAuthentication(o =>
-        {
-            o.DefaultScheme = IdentityConstants.ApplicationScheme;
-            o.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-            //TODO: someday see with bearer token
-        })
-        .AddIdentityCookies(o => { });
+        //services.AddAuthentication(o =>
+        //{
+        //    o.DefaultScheme = IdentityConstants.ApplicationScheme;
+        //    o.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+        //    //TODO: someday see with bearer token
+        //})
+        //.AddIdentityCookies(o => { });
 
-        services.AddAuthorization();
+        //services.AddAuthorization();
 
         return services;
     }

@@ -2,6 +2,7 @@ using Carter;
 using Chat.API.Configurations;
 using Chat.API.Hubs;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.Extensions.Configuration;
 
 namespace ChatApplication
 {
@@ -16,6 +17,7 @@ namespace ChatApplication
             builder.Services
                 .AddDbContext(builder.Configuration)
                 .AddIdentityAuthentication()
+                .AddJwtAuthentication(builder.Services.GetApplicationSettings(builder.Configuration))
                 .AddWriters()
                 .AddFactories()
                 .AddRepositories()
@@ -51,7 +53,7 @@ namespace ChatApplication
             app.UseBlazorFrameworkFiles();
             app.UseStaticFiles();
 
-            app.UseCookiePolicy();
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapCarter();

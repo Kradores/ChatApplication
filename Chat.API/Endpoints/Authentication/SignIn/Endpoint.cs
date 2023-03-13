@@ -11,7 +11,7 @@ public class Endpoint : ICarterModule
         app.MapPost("sign-in", Handler)
             .WithName(nameof(SignIn))
             .WithTags(nameof(Authentication))
-            .Produces(StatusCodes.Status200OK, typeof(void))
+            .Produces(StatusCodes.Status200OK, typeof(TokenResponse))
             .Produces(StatusCodes.Status401Unauthorized, typeof(void))
             .AllowAnonymous();
     }
@@ -29,11 +29,11 @@ public class Endpoint : ICarterModule
 
         var result = await factory.SignInAsync(user);
 
-        if (result.Succeeded)
+        if (result == null)
         {
-            return Results.Ok(result);
+            return Results.Unauthorized();
         }
 
-        return Results.Unauthorized();
+        return Results.Ok(result);
     }
 }

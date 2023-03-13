@@ -25,9 +25,9 @@ public static class ConfigureDbContext
             options.UseSqlServer(configuration.GetConnectionString("ChatConnectionString"),
                 sqlOptions =>
                 {
-                    //sqlOptions.MigrationsAssembly(typeof(AuthenticationContext).Assembly.FullName);
+                    sqlOptions.MigrationsAssembly(typeof(AuthenticationContext).Assembly.FullName);
                     sqlOptions.EnableRetryOnFailure(15, TimeSpan.FromSeconds(30), null);
-                    //sqlOptions.MigrationsHistoryTable("__EFMigrationsHistory", AuthenticationContext.DEFAULT_SCHEMA);
+                    sqlOptions.MigrationsHistoryTable("__EFMigrationsHistory");
                 });
         });
 
