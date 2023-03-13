@@ -1,9 +1,11 @@
 ﻿using Chat.Domain.Factories.Interfaces;
 using Chat.Domain.Models.Authentication.ValueObjects;
+using Chat.Domain.Models.Messages.Aggregates;
 using Chat.Domain.Models.Messages.VaulueObjects;
 using Chat.Domain.Models.ValueObjects;
 using Chat.Infrastructure.Enums;
 using Microsoft.AspNetCore.SignalR;
+using static Chat.API.Endpoints.ChatRoom.GetMany.Response;
 
 namespace Chat.API.Hubs;
 
@@ -50,22 +52,14 @@ public class ChatHub : Hub
                 UnreadMessages = 0
             };
 
-            foreach (var user in  room.Users)
+            foreach (var user in room.Users)
             {
                 await Clients.User(user.Id.Value).SendAsync("ReceiveCreatedChat", response);
             }
         }
     }
 
-    public async Task SendPrivateMessage(string user, string message)
-    {
-        if (Context.User?.Identity?.Name is not null)
-        {
-            await Clients.User(user).SendAsync("ReceivePrivateMessage", Context.User.Identity.Name, message);
-        }
-    }
-
-    public async Task SendGroupMessage(string roomId, string text, IMessageFactory messageFactory)
+    public async Task SendGroupMessage(string roomId, string text, IMessageFactory messageFactory, IChatFactory chatFactory)
     {
         if (Context.User?.Identity?.Name is not null && Context.UserIdentifier is not null)
         {
@@ -82,17 +76,38 @@ public class ChatHub : Hub
                 CreatedAt = message.CreatedAt.Value.ToString("yyyy-MM-dd HH:mm:ss"),
                 SenderName = message.User.Username.Value
             });
+
+            await UpdateChatUnreadMessages(Id.From(int.Parse(roomId)), chatFactory);
         }
     }
 
-    public async Task NotifyMessageSeen(int messageId, IMessageFactory messageFactory)
+    private async Task UpdateChatUnreadMessages(Id chatId, IChatFactory chatFactory)
+    {
+        var chat = await chatFactory.GetAsync(chatId, default);
+
+        if (chat == null) return;
+
+        foreach (var notif in chat.Notifications)
+        {
+            await Clients.User(notif.UserId.Value).SendAsync("ReceiveChatUnreadMessages", new Endpoints.ChatRoom.ChatUnreadMessages.Response()
+            {
+                ChatId = chat.Id.Value,
+                UserId = notif.UserId.Value,
+                UnreadMessages = notif.UnreadMessagesCount.Value
+            });
+        }
+    }
+
+    public async Task NotifyMessageSeen(int messageId, IMessageFactory messageFactory, IChatFactory chatFactory)
     {
         if (Context.UserIdentifier is not null)
         {
-            await messageFactory.UpdateAsync(
+            var message = await messageFactory.UpdateAsync(
                 UserId.From(Context.UserIdentifier),
                 Id.From(messageId),
                 MessageStatus.From(MessageStatusEnum.SEEN), default);
+
+            await chatFactory.ResetUnreadMessagesAsync(message.ChatId, message.UserId, default);
         }
     }
 

@@ -26,6 +26,7 @@ public class ChatHubStateContainer : IAsyncDisposable
     public List<string> UsersInRoom { get; private set; } = new List<string>();
     public List<Message> Messages { get; private set; } = new List<Message>();
     public List<ChatRoom> ChatRooms { get; private set; } = new List<ChatRoom>();
+    public ChatRoom? CurrentChatRoom { get; private set; } = null;
 
     public ChatHubStateContainer(AuthenticationStateProvider stateProvider, IWebAssemblyHostEnvironment environment)
     {
@@ -58,9 +59,18 @@ public class ChatHubStateContainer : IAsyncDisposable
         Messages = new();
     }
 
+    public void ClearChatUnreadMessages()
+    {
+        if (CurrentChatRoom != null && CurrentChatRoom.UnreadMessages != 0)
+            CurrentChatRoom.UnreadMessages = 0;
+        NotifyChatListStateChanged();
+    }
+
     public void InitMessages(List<Message> messages)
     {
         Messages = messages;
+        ClearChatUnreadMessages();
+        Messages.Where(x => x.Status != "SEEN").ToList().ForEach(async x => await NotifyMessageSeenAsync(x.Id));
     }
 
     private void NotifyStateChanged() => OnStateChange?.Invoke();
@@ -101,6 +111,18 @@ public class ChatHubStateContainer : IAsyncDisposable
         Connection.On<ChatCreateResponse>("ReceiveCreatedChat", (response) =>
         {
             ChatRooms.Insert(0, response.ToFeed());
+            NotifyChatListStateChanged();
+        });
+
+        Connection.On<ChatUnreadMessagesResponse>("ReceiveChatUnreadMessages", (response) =>
+        {
+            var chatRoom = ChatRooms.FirstOrDefault(x => x.Id == response.ChatId);
+
+            if (chatRoom != null && chatRoom != CurrentChatRoom)
+            {
+                chatRoom.UnreadMessages = response.UnreadMessages;
+            }
+
             NotifyChatListStateChanged();
         });
     }
@@ -180,6 +202,8 @@ public class ChatHubStateContainer : IAsyncDisposable
         {
             await Connection.SendAsync("AddToGroup", roomId);
         }
+
+        CurrentChatRoom = ChatRooms.First(x => x.Id == int.Parse(roomId));
     }
 
     public async Task RemoveFromGroupAsync(string roomId)
@@ -189,6 +213,7 @@ public class ChatHubStateContainer : IAsyncDisposable
             await Connection.SendAsync("RemoveFromGroup", roomId);
         }
 
+        CurrentChatRoom = null;
         ClearUsers();
         ClearMessages();
     }

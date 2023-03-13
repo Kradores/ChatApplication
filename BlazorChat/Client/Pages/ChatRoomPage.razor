@@ -13,9 +13,10 @@
 
 <AuthorizeView>
     <Authorized>
-        <h3>ChatRoom @ChatRoom?.Name</h3>
+        <h3>ChatRoom @ChatHub.CurrentChatRoom?.Name</h3>
 
         <div class="message-list-container">
+            <div></div>
             @foreach (var message in ChatHub.Messages)
             {
                 <div class="message-container">
@@ -24,7 +25,6 @@
                     <span class="time-right">@message.CreatedAt</span>
                 </div>
             }
-        <div></div>
         </div>
 
         <EditForm Model="@Message" OnValidSubmit="@Send" class="message-input-form">
@@ -48,7 +48,6 @@
     [Parameter]
     public string? Id { get; set; } = null;
 
-    private ChatRoom ChatRoom { get; set; } = new();
     private MessageInput Message { get; set; } = new();
 
     protected override void OnInitialized()
@@ -72,7 +71,6 @@
         if (!string.IsNullOrEmpty(Id))
         {
             await ChatHub.AddToGroupAsync(Id);
-            ChatRoom = ChatHub.ChatRooms.First(x => x.Id == int.Parse(Id));
 
             var response = await api.GetAsync(new()
                 {

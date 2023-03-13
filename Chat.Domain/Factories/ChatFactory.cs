@@ -47,6 +47,17 @@ public class ChatFactory : IChatFactory
         throw new NotImplementedException();
     }
 
+    public async Task<ChatRoom?> GetAsync(Id chatId, CancellationToken cancellationToken)
+    {
+        var entity = await _chatRepository.GetAsync(chatId.Value, cancellationToken);
+
+        if (entity == null) return null;
+
+        await _chatRepository.AttachNotificationsAsync(entity);
+
+        return entity.ToModel();
+    }
+
     public async Task<ChatRoom?> GetAsync(Name name, CancellationToken cancellationToken)
     {
         var entity = await _chatRepository.GetAsync(name.Value, cancellationToken);
@@ -65,6 +76,25 @@ public class ChatFactory : IChatFactory
         }
 
         return entities.Select(x => x.ToModel()).ToList();
+    }
+
+    public async Task<ChatRoom?> ResetUnreadMessagesAsync(Id chatId, UserId userId, CancellationToken cancellationToken)
+    {
+        var entity = await _chatRepository.GetAsync(chatId.Value, cancellationToken);
+
+        if (entity == null) return null;
+
+        await _chatRepository.AttachNotificationsAsync(entity);
+
+        var notif = entity.Notifications.FirstOrDefault(x => x.UserId == userId.Value);
+
+        if (notif == null) return null;
+
+        notif.UnreadMessages = 0;
+
+        await _chatRepository.UpdateAsync(cancellationToken);
+
+        return entity.ToModel();
     }
 
     public Task<ChatRoom> UpdateAsync(ChatRoom room, CancellationToken cancellationToken)

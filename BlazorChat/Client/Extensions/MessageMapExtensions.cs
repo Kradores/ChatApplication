@@ -25,7 +25,8 @@ public static class MessageMapExtensions
             ChatRoomId = x.ChatRoomId,
             Text = x.Text,
             CreatedAt = x.CreatedAt,
-            SenderName = x.SenderName
+            SenderName = x.SenderName,
+            Status = x.Status,
         }).ToList();
     }
 }

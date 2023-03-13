@@ -7,4 +7,5 @@ public class Message
     public string Text { get; set; } = null!;
     public string CreatedAt { get; set; } = null!;
     public string SenderName { get; set; } = null!;
+    public string Status { get; set; } = null!;
 }
