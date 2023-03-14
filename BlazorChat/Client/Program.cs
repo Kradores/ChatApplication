@@ -1,7 +1,9 @@
 using BlazorChat.Client.Configurations;
 using BlazorChat.Client.Services;
+using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
 namespace BlazorChat.Client
@@ -14,17 +16,16 @@ namespace BlazorChat.Client
             builder.RootComponents.Add<App>("#app");
             builder.RootComponents.Add<HeadOutlet>("head::after");
 
+            builder.Services.AddBlazoredLocalStorage();
             builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+            builder.Services.AddTransient<AuthenticationHeaderHandler>();
 
-            builder.Services.AddHttpClient("Chat.API", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));
+            builder.Services.AddHttpClient("Chat.API", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))
+                .AddHttpMessageHandler<AuthenticationHeaderHandler>();
 
             builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("Chat.API"));
 
-            builder.Services.AddOidcAuthentication(options =>
-            {
-                options.ProviderOptions.Authority = builder.HostEnvironment.BaseAddress;
-                options.ProviderOptions.ClientId = "ClientId";
-            });
+            builder.Services.AddAuthorizationCore();
 
             builder.Services.AddApiRequests()
                 .AddStateContainers();

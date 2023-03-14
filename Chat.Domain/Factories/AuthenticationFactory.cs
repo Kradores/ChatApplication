@@ -45,6 +45,7 @@ public class AuthenticationFactory : IAuthenticationFactory
         return new TokenResponse {
             Token = Token.From(token),
             RefreshToken = RefreshToken.From(entity.RefreshToken),
+            RefreshTokenExpiryTime = RefreshTokenExpiryTime.From(entity.RefreshTokenExpiryTime ?? DateTime.Now.AddDays(7))
         };
     }
 

@@ -2,12 +2,10 @@
 
 @using BlazorChat.Client.Models.Requests.Authentication
 @using BlazorChat.Client.Services;
-@using Microsoft.AspNetCore.Authorization
-@using System.Security.Claims
+@using BlazorChat.Client.HttpApi.Authentication
 
-@inject HttpClient Http
+@inject AuthenticationApi AuthApi
 @inject NavigationManager NavManager
-@inject AuthenticationStateProvider AuthState
 
 <PageTitle>SignUp</PageTitle>
 
@@ -30,17 +28,13 @@
 </EditForm>
 
 @code {
-    [CascadingParameter] public Task<AuthenticationState> AuthTask { get; set; }
     private SignUpRequest Request = new();
     private EditContext? EditContext;
     private ValidationMessageStore? MessageStore;
     private FieldIdentifier ErrorMessage;
-    private ClaimsPrincipal? User;
 
     protected override async Task OnInitializedAsync()
     {
-        var authState = await AuthTask;
-        User = authState.User;
         EditContext = new(Request);
         EditContext.OnValidationRequested += HandleValidationRequested;
         EditContext.OnFieldChanged += HandleFieldChanged;
@@ -56,16 +50,14 @@
     private async Task HandleValidSubmit()
     {
         MessageStore?.Clear();
-        var response = await Http.PostAsJsonAsync("/sign-up", Request);
+        var response = await AuthApi.RegisterUserAsync(Request);
 
-        if (!response.IsSuccessStatusCode)
+        if (!response)
         {
             MessageStore?.Add(() => ErrorMessage, "Username already exists!");
         }
         else
         {
-            var authState = await ((CustomAuthenticationStateProvider)AuthState).ChangeUser(Request.Username);
-            User = authState.User;
             NavManager.NavigateTo("/");
         }
     }

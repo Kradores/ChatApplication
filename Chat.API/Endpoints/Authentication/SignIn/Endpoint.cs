@@ -11,7 +11,7 @@ public class Endpoint : ICarterModule
         app.MapPost("sign-in", Handler)
             .WithName(nameof(SignIn))
             .WithTags(nameof(Authentication))
-            .Produces(StatusCodes.Status200OK, typeof(TokenResponse))
+            .Produces(StatusCodes.Status200OK, typeof(Response))
             .Produces(StatusCodes.Status401Unauthorized, typeof(void))
             .AllowAnonymous();
     }
@@ -34,6 +34,11 @@ public class Endpoint : ICarterModule
             return Results.Unauthorized();
         }
 
-        return Results.Ok(result);
+        return Results.Ok(new Response()
+        {
+            Token = result.Token.Value,
+            RefreshToken = result.RefreshToken.Value,
+            RefreshTokenExpiryTime = result.RefreshTokenExpiryTime.Value,
+        });
     }
 }

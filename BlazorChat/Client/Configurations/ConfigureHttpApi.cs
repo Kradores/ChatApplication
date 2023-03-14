@@ -1,4 +1,5 @@
-﻿using BlazorChat.Client.Requests.Chats;
+﻿using BlazorChat.Client.HttpApi.Authentication;
+using BlazorChat.Client.Requests.Chats;
 using BlazorChat.Client.Requests.Messages;
 using BlazorChat.Client.Requests.Users;
 
@@ -10,7 +11,8 @@ public static class ConfigureHttpApi
     {
         services.AddScoped<UserApi>()
             .AddScoped<ChatApi>()
-            .AddScoped<MessagesApi>();
+            .AddScoped<MessagesApi>()
+            .AddScoped<AuthenticationApi>();
 
         return services;
     }

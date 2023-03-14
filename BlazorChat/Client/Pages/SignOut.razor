@@ -1,42 +1,26 @@
 ﻿@page "/authentication/sign-out"
 
 @using BlazorChat.Client.Services
-@using Microsoft.AspNetCore.Authorization
-@using System.Security.Claims
+@using BlazorChat.Client.HttpApi.Authentication
 
-@inject HttpClient Http
+@inject AuthenticationApi AuthApi
 @inject NavigationManager NavManager
-@inject AuthenticationStateProvider AuthState
 
 <PageTitle>SignOut</PageTitle>
 <br />
 <p>@Message</p>
 
 @code {
-    [CascadingParameter] public Task<AuthenticationState> AuthTask { get; set; }
-    private ClaimsPrincipal? User;
     private string Message = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
-        var authState = await AuthTask;
-        User = authState.User;
         await SignOutAsync();
     }
 
     private async Task SignOutAsync()
     {
-        var response = await Http.GetAsync("/sign-out");
-
-        if (!response.IsSuccessStatusCode)
-        {
-            Message = "Something went wrong!";
-        }
-        else
-        {
-            var authState = await ((CustomAuthenticationStateProvider)AuthState).SignOut();
-            User = authState.User;
-            NavManager.NavigateTo("/");
-        }
+        await AuthApi.LogoutAsync();
+        NavManager.NavigateTo("/");
     }
 }
