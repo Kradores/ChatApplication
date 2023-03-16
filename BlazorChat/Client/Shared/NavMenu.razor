@@ -1,6 +1,4 @@
-﻿@using BlazorChat.Client.Models.Feeds.Chat
-
-@implements IDisposable
+﻿@implements IDisposable
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
@@ -25,12 +23,15 @@
                         <span class="oi oi-plus" aria-hidden="true"></span> Create New Chat
                     </NavLink>
                 </div>
-                @foreach (ChatRoom chat in ChatHub.ChatRooms)
+                @foreach (var chat in ChatHub.ChatRooms)
                 {
                     <div class="nav-item px-3">
                         <NavLink class="nav-link" href="@("chats/" + chat.Id)">
-                            <span class="oi oi-chat" aria-hidden="true"></span> @chat.Name
-                            <div style="position: relative;left: 90px;color: palevioletred;" hidden="@(chat.UnreadMessages == 0)">@chat.UnreadMessages</div>
+                            <span class="oi oi-chat" aria-hidden="true"></span>
+                            <div style="width: 100%;">
+                                @chat.Name
+                            </div>
+                            <div style="color: palevioletred;" hidden="@(chat.UnreadMessages == 0)">@chat.UnreadMessages</div>
                         </NavLink>
                     </div>
                 }
@@ -38,24 +39,3 @@
         </div>
     </Authorized>
 </AuthorizeView>
-
-
-@code {
-    private bool collapseNavMenu = true;
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-    }
-
-    protected override void OnInitialized()
-    {
-        ChatHub.OnChatListStateChange += StateHasChanged;
-    }
-
-    public void Dispose()
-    {
-        ChatHub.OnChatListStateChange -= StateHasChanged;
-    }
-}

@@ -1,7 +1,5 @@
 ﻿@page "/authentication/sign-up"
 
-@using BlazorChat.Client.Models.Requests.Authentication
-@using BlazorChat.Client.Services;
 @using BlazorChat.Client.HttpApi.Authentication
 
 @inject AuthenticationApi AuthApi
@@ -26,54 +24,3 @@
     <br />
     <input type="submit" class="btn btn-primary" value="Sign-Up" />
 </EditForm>
-
-@code {
-    private SignUpRequest Request = new();
-    private EditContext? EditContext;
-    private ValidationMessageStore? MessageStore;
-    private FieldIdentifier ErrorMessage;
-
-    protected override async Task OnInitializedAsync()
-    {
-        EditContext = new(Request);
-        EditContext.OnValidationRequested += HandleValidationRequested;
-        EditContext.OnFieldChanged += HandleFieldChanged;
-        MessageStore = new(EditContext);
-    }
-
-    private void HandleValidationRequested(object? sender,
-        ValidationRequestedEventArgs args)
-    {
-        MessageStore?.Clear();
-    }
-
-    private async Task HandleValidSubmit()
-    {
-        MessageStore?.Clear();
-        var response = await AuthApi.RegisterUserAsync(Request);
-
-        if (!response)
-        {
-            MessageStore?.Add(() => ErrorMessage, "Username already exists!");
-        }
-        else
-        {
-            NavManager.NavigateTo("/");
-        }
-    }
-
-    private void HandleFieldChanged(object? sender,
-        FieldChangedEventArgs args)
-    {
-        MessageStore?.Clear();
-    }
-
-    public void Dispose()
-    {
-        if (EditContext is not null)
-        {
-            EditContext.OnValidationRequested -= HandleValidationRequested;
-            EditContext.OnFieldChanged -= HandleFieldChanged;
-        }
-    }
-}

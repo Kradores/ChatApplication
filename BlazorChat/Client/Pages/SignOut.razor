@@ -1,26 +1,8 @@
 ﻿@page "/authentication/sign-out"
 
-@using BlazorChat.Client.Services
 @using BlazorChat.Client.HttpApi.Authentication
 
 @inject AuthenticationApi AuthApi
 @inject NavigationManager NavManager
 
 <PageTitle>SignOut</PageTitle>
-<br />
-<p>@Message</p>
-
-@code {
-    private string Message = string.Empty;
-
-    protected override async Task OnInitializedAsync()
-    {
-        await SignOutAsync();
-    }
-
-    private async Task SignOutAsync()
-    {
-        await AuthApi.LogoutAsync();
-        NavManager.NavigateTo("/");
-    }
-}
