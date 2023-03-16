@@ -19,8 +19,4 @@
     <PackageReference Include="System.Net.Http.Json" Version="7.0.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Shared\BlazorChat.Shared.csproj" />
-  </ItemGroup>
-
 </Project>

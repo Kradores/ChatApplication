@@ -3,7 +3,6 @@ using BlazorChat.Client.Models.Feeds.Chat;
 using BlazorChat.Client.Models.Feeds.Messages;
 using BlazorChat.Client.Models.Requests.ChatRooms;
 using BlazorChat.Client.Models.Responses.ChatRooms;
-using BlazorChat.Client.Pages;
 using BlazorChat.Client.Services;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -45,14 +44,14 @@ public class ChatHubStateContainer : IAsyncDisposable
     {
         if (!IsConnected)
         {
-            task.ContinueWith(t =>
+            task.ContinueWith(async t =>
             {
-                var authState = t.Result;
+                var authState = await t;
                 var identity = authState.User.Identity;
 
                 if (identity?.IsAuthenticated != null && identity?.IsAuthenticated == true)
                 {
-                    Init().ConfigureAwait(true);
+                    await Init();
                 }
             });
         }
