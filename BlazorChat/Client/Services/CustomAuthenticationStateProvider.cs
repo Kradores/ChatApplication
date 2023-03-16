@@ -45,7 +45,7 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
         var savedToken = await _localStorage.GetItemAsync<string>("authToken");
         if (string.IsNullOrWhiteSpace(savedToken))
         {
-            return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+            return new AuthenticationState(GetAnonymous());
         }
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", savedToken);
         var state = new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(GetClaimsFromJwt(savedToken), "jwt")));
@@ -78,7 +78,7 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
 
     public void SignOut()
     {
-        this.CurrentUser = this.GetAnonymous();
+        CurrentUser = GetAnonymous();
         var authState = Task.FromResult(new AuthenticationState(CurrentUser));
         NotifyAuthenticationStateChanged(authState);
     }

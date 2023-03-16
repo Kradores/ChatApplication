@@ -5,6 +5,7 @@ using BlazorChat.Client.Models.Requests.ChatRooms;
 using BlazorChat.Client.Models.Responses.ChatRooms;
 using BlazorChat.Client.Pages;
 using BlazorChat.Client.Services;
+using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.AspNetCore.SignalR.Client;
@@ -13,6 +14,7 @@ namespace BlazorChat.Client.StateContainers;
 
 public class ChatHubStateContainer : IAsyncDisposable
 {
+    private readonly ILocalStorageService _localStorage;
     private readonly CustomAuthenticationStateProvider _stateProvider;
     private readonly string _baseAddress;
     private HubConnection Connection;
@@ -28,24 +30,35 @@ public class ChatHubStateContainer : IAsyncDisposable
     public List<ChatRoom> ChatRooms { get; private set; } = new List<ChatRoom>();
     public ChatRoom? CurrentChatRoom { get; private set; } = null;
 
-    public ChatHubStateContainer(AuthenticationStateProvider stateProvider, IWebAssemblyHostEnvironment environment)
+    public ChatHubStateContainer(ILocalStorageService localStorage, AuthenticationStateProvider stateProvider, IWebAssemblyHostEnvironment environment)
     {
+        _localStorage = localStorage;
         _stateProvider = (CustomAuthenticationStateProvider)stateProvider;
-        _stateProvider.AuthenticationStateChanged += AuthenticationStateChangedHandler;
         _baseAddress = environment.BaseAddress;
+
+        AuthenticationStateChangedHandler(_stateProvider.GetAuthenticationStateAsync());
+        _stateProvider.AuthenticationStateChanged += AuthenticationStateChangedHandler;
+        
     }
 
     private void AuthenticationStateChangedHandler(Task<AuthenticationState> task)
     {
-        if (task is not null)
+        if (!IsConnected)
         {
-            var authState = task.Result;
-            var identity = authState.User.Identity;
-
-            if (identity?.IsAuthenticated != null && identity?.IsAuthenticated == true)
+            task.ContinueWith(t =>
             {
-                Init().ConfigureAwait(true);
-            }
+                var authState = t.Result;
+                var identity = authState.User.Identity;
+
+                if (identity?.IsAuthenticated != null && identity?.IsAuthenticated == true)
+                {
+                    Init().ConfigureAwait(true);
+                }
+            });
+        }
+        else
+        {
+            _ = Connection.DisposeAsync();
         }
     }
 
@@ -80,7 +93,11 @@ public class ChatHubStateContainer : IAsyncDisposable
     private async Task Init()
     {
         Connection = new HubConnectionBuilder()
-            .WithUrl(_baseAddress + "chathub")
+            .WithUrl(_baseAddress + "chathub", options =>
+            {
+                options.AccessTokenProvider = async () => await _localStorage.GetItemAsync<string>("authToken");
+            })
+            .WithAutomaticReconnect()
             .Build();
 
         InitManager();

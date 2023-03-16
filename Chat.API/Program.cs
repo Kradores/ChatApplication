@@ -38,7 +38,7 @@ namespace ChatApplication
 
             if (app.Environment.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                //app.UseDeveloperExceptionPage();
                 app.UseWebAssemblyDebugging();
             }
             else
