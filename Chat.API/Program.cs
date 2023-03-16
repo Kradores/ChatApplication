@@ -38,7 +38,6 @@ namespace ChatApplication
 
             if (app.Environment.IsDevelopment())
             {
-                //app.UseDeveloperExceptionPage();
                 app.UseWebAssemblyDebugging();
             }
             else
@@ -48,6 +47,7 @@ namespace ChatApplication
                 app.UseHsts();
             }
 
+            app.MigrateAllDbContexts();
             app.UseHttpsRedirection();
 
             app.UseBlazorFrameworkFiles();

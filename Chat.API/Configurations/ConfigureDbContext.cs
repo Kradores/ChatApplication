@@ -33,5 +33,20 @@ public static class ConfigureDbContext
 
         return services;
     }
+
+    public static IApplicationBuilder MigrateAllDbContexts(this IApplicationBuilder app)
+    {
+        using var serviceScope = app.ApplicationServices.CreateScope();
+        MigrateDbContext<AuthenticationContext>(serviceScope);
+        MigrateDbContext<ChatContext>(serviceScope);
+
+        return app;
+    }
+
+    private static void MigrateDbContext<T>(IServiceScope serviceScope) where T : DbContext
+    {
+        var context = serviceScope.ServiceProvider.GetRequiredService<T>();
+        context.Database.Migrate();
+    }
         
 }
