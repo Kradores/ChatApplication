@@ -13,6 +13,8 @@ Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorChat.Client", "BlazorChat\Client\BlazorChat.Client.csproj", "{C65C21F9-94EF-4A0C-B2F2-7E27A9171F6D}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Chat.Tests.Integration", "Tests\Chat.Tests.Integration\Chat.Tests.Integration.csproj", "{953C4970-7EB7-46ED-9485-10E4D5005D62}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{C65C21F9-94EF-4A0C-B2F2-7E27A9171F6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C65C21F9-94EF-4A0C-B2F2-7E27A9171F6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C65C21F9-94EF-4A0C-B2F2-7E27A9171F6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{953C4970-7EB7-46ED-9485-10E4D5005D62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{953C4970-7EB7-46ED-9485-10E4D5005D62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{953C4970-7EB7-46ED-9485-10E4D5005D62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{953C4970-7EB7-46ED-9485-10E4D5005D62}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
